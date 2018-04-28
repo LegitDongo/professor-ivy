@@ -1,0 +1,9 @@
+Ideas in no particular order
+
+When bot sends a message, check to see if it contains any registered super mega ultra rare Pokemon and tag the corresponding role for that area
+If we want to crowdsource nests: !nest Pokémon location
+Donations
+Come up with a different name for "other" commands
+Caching responses
+Music
+Add DB column for some commands to respond to people instead of only post to channel

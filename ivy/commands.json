@@ -1,0 +1,525 @@
+{
+  "admin": {
+    ".cmd add {command-name} {command-value}": "Add a command",
+    ".cmd rm {command-name}": "Remove a command",
+    ".cmd update {command-name} {new-command-value}": "Update a command",
+    "!clean": "Clean current channel of all messages"
+  },
+  "all": {
+    "!ivy cmd {page_num}": "Access common command/response command list by sets of 10",
+    "!raid {raid level}": "Get all probable pokemon from a raid level",
+    "!raid {pokemon name}": "Get all information about a raid boss",
+    ".iam {role name}": "Assign yourself to {role name}",
+    ".iamnot {role name}": "Remove yourself from {role name}"
+  },
+  "raids": [
+    {
+      "names": "1,one",
+      "required": "1",
+      "pokemon": {
+        "Croconaw": {
+          "max": "4375",
+          "counters": "Flareon, Charizard, Gengar",
+          "offense": {
+            "weak": [ "Electric", "Grass" ],
+            "resist": [ "Fire", "Ice", "Steel", "Water" ]
+          },
+          "type": "Water",
+          "dex": "!weak Croconaw"
+        },
+        "Quilava": {
+          "max": "5207",
+          "counters": "Golem, Starmie, Vaporeon",
+          "offense": {
+            "weak": [ "Ground", "Rock", "Water" ],
+            "resist": [ "Bug", "Fairy", "Fire", "Grass", "Ice", "Steel" ]
+          },
+          "type": "Fire",
+          "dex": "!weak Quilava"
+        },
+        "Bayleef": {
+          "max": "4375",
+          "counters": "Flareon, Charizard, Gengar",
+          "offense": {
+            "weak": [ "Bug", "Flying", "Fire", "Ice", "Poison" ],
+            "resist": [ "Electric", "Grass", "Ground", "Water" ]
+          },
+          "type": "Grass",
+          "dex": "!weak Bayleef"
+        },
+        "Magikarp": {
+          "max": "1165",
+          "counters": "Exeggutor, Venusaur, Jolteon",
+          "offense": {
+            "weak": [ "Electric", "Grass" ],
+            "resist": [ "Fire", "Ice", "Steel", "Water" ]
+          },
+          "type": "Water",
+          "dex": "!weak Magikarp"
+        },
+        "Wartortle": {
+          "max": "4503",
+          "type": "Water",
+          "counters": "Raichu, Sunflora, Voltorb",
+          "offense": {
+            "weak": [ "Electric", "Grass" ],
+            "resist": [ "Fire", "Ice", "Steel", "Water" ]
+          }
+        },
+        "Ivysaur": {
+          "max": "5238",
+          "type": "Grass/Poison",
+          "counters": "Houndoom, Sneasel, Charmeleon",
+          "offense": {
+            "weak": [ "Flying", "Fire", "Ice", "Psychic" ],
+            "resist": [ "Electric", "Grass", "Water", "Fairy", "Fighting" ]
+          }
+        },
+        "Metapod": {
+          "max": "1534",
+          "type": "Bug",
+          "counters": "Rhydon, Pidgeot, Xatu",
+          "offense": {
+            "weak": [ "Flying", "Fire", "Rock" ],
+            "resist": [ "Fighting", "Grass", "Ground" ]
+          }
+        },
+        "Charmeleon": {
+          "max": "5085",
+          "type": "Fire",
+          "counters": "Omastar, Omanyte, Cubone",
+          "offense": {
+            "weak": [ "Ground", "Rock", "Water" ],
+            "resist": [ "Bug", "Fairy", "Fire", "Grass", "Ice", "Steel" ]
+          }
+        }
+      }
+    },
+    {
+      "names": "2,two",
+      "required": "1",
+      "pokemon": {
+        "Electabuzz": {
+          "max": "11311",
+          "counters": "Gengar, Dragonite, Alakazam, Flareon",
+          "offense": {
+            "weak": [ "Ground" ],
+            "resist": [ "Electric", "Flying", "Steel" ]
+          },
+          "type": "Electric",
+          "dex": "!weak Electabuzz"
+        },
+        "Exeggutor": {
+          "max": "12633",
+          "counters": "Pinsir, Gengar, Heracross",
+          "offense": {
+            "superweak": [ "Bug" ],
+            "weak": [ "Flying", "Fire", "Ice", "Poison", "Dark", "Ghost" ],
+            "resist": [ "Electric", "Grass", "Ground", "Water", "Fighting", "Psychic" ]
+          },
+          "type": "Grass/Psychic",
+          "dex": "!weak Exeggutor"
+        },
+        "Magmar": {
+          "max": "11610",
+          "counters": "Golem, Starmie, Vaporeon",
+          "offense": {
+            "weak": [ "Ground", "Rock", "Water" ],
+            "resist": [ "Bug", "Fairy", "Fire", "Grass", "Ice", "Steel" ]
+          },
+          "type": "Fire",
+          "dex": "!weak Magmar"
+        },
+        "Muk": {
+          "max": "11200",
+          "counters": "Alakazam, Espeon, Exeggutor",
+          "offense": {
+            "weak": [ "Ground", "Psychic" ],
+            "resist": [ "Bug", "Fairy", "Fighting", "Grass", "Poison" ]
+          },
+          "type": "Poison",
+          "dex": "!weak Muk"
+        },
+        "Weezing": {
+          "max": "11245",
+          "counters": "Alakazam, Espeon, Exeggutor",
+          "offense": {
+            "weak": [ "Ground", "Psychic" ],
+            "resist": [ "Bug", "Fairy", "Fighting", "Grass", "Poison" ]
+          },
+          "type": "Poison",
+          "dex": "!weak Weezing"
+        },
+        "Magneton": {
+          "max": "14172",
+          "counters": "Steelix, Golem, Sandslash",
+          "type": "Electric/Steel",
+          "offense": {
+            "weak": [ "Ground", "Fighting", "Fire" ],
+            "resist": [ "Electric", "Flying", "Steel", "Bug", "Dragon", "Fairy", "Grass", "Ice", "Normal", "Poison", "Psychic", "Rock" ]
+          }
+        },
+        "Sableye": {
+          "max": "8266",
+          "counters": "Gardevoir, Mawile, Kirlia",
+          "type": "Dark/Ghost",
+          "offense": {
+            "weak": [ "Fairy" ],
+            "resist": [ "Psychic", "Normal", "Poison" ]
+          }
+        },
+        "Sandslash": {
+          "max": "12312",
+          "counters": "Lapras, Politoed, Dewgong",
+          "type": "Ground",
+          "offense": {
+            "weak": [ "Grass", "Ice", "Water" ],
+            "resist": [ "Electric", "Poison", "Rock" ]
+          }
+        },
+        "Tentacruel": {
+          "max": "12190",
+          "counters": "Jolteon, Electrode, Electabuzz",
+          "type": "Water/Poison",
+          "offense": {
+            "weak": [ "Electric", "Ground", "Psychic" ],
+            "resist": [ "Fire", "Ice", "Steel", "Water", "Bug", "Fairy", "Fighting", "Poison" ]
+          }
+        },
+        "Marowak": {
+          "max": "9891",
+          "counters": "Slowking, Staryu, Exeggcute",
+          "type": "Ground",
+          "offense": {
+            "weak": [ "Grass", "Ice", "Water" ],
+            "resist": [ "Electric", "Poison", "Rock" ]
+          }
+        },
+        "Cloyster": {
+          "max": "15678",
+          "counters": "Gloom, Weepinbell, Pikachu",
+          "type": "Water/Ice",
+          "offense": {
+            "weak": [ "Electric", "Grass", "Fighting", "Rock" ],
+            "resist": [ "Ice", "Water" ]
+          }
+        }
+      }
+    },
+    {
+      "names": "3,three",
+      "required": "3+",
+      "pokemon": {
+        "Alakazam": {
+          "max": "22646",
+          "counters": "Gengar, Houndoom, Tyranitar",
+          "offense": {
+            "weak": [ "Bug", "Dark", "Ghost" ],
+            "resist": [ "Fighting", "Psychic" ]
+          },
+          "type": "Psychic",
+          "dex": "!weak Alakazam"
+        },
+        "Arcanine": {
+          "max": "17832",
+          "counters": "Golem, Starmie, Vaporeon",
+          "offense": {
+            "weak": [ "Ground", "Rock", "Water" ],
+            "resist": [ "Bug", "Fairy", "Fire", "Grass", "Ice", "Steel" ]
+          },
+          "type": "Fire",
+          "dex": "!weak Arcanine"
+        },
+        "Flareon": {
+          "max": "21155",
+          "counters": "Golem, Starmie, Vaporeon",
+          "offense": {
+            "weak": [ "Ground", "Rock", "Water" ],
+            "resist": [ "Bug", "Fairy", "Fire", "Grass", "Ice", "Steel" ]
+          },
+          "type": "Fire",
+          "dex": "!weak Flareon"
+        },
+        "Gengar": {
+          "max": "19768",
+          "counters": "Gengar, Alakazam, Espeon",
+          "offense": {
+            "weak": [ "Dark", "Ghost", "Ground", "Psychic" ],
+            "resist": [ "Normal", "Fairy", "Grass" ],
+            "superresist": [ "Bug", "Fighting", "Poison" ]
+          },
+          "type": "Ghost/Poison",
+          "dex": "!weak Gengar"
+        },
+        "Jolteon": {
+          "max": "19883",
+          "counters": "Gengar, Dragonite, Alakazam, Flareon",
+          "offense": {
+            "weak": [ "Ground" ],
+            "resist": [ "Electric", "Flying", "Steel" ]
+          },
+          "type": "Electric",
+          "dex": "!weak Jolteon"
+        },
+        "Machamp": {
+          "max": "18144",
+          "counters": "Alakazam, Espeon, Exeggutor",
+          "offense": {
+            "weak": [ "Fairy", "Flying", "Psychic" ],
+            "resist": [ "Bug", "Dark", "Rock" ]
+          },
+          "type": "Fighting",
+          "dex": "!weak Machamp"
+        },
+        "Vaporeon": {
+          "max": "16696",
+          "counters": "Exeggutor, Venusaur, Jolteon",
+          "offense": {
+            "weak": [ "Electric", "Grass" ],
+            "resist": [ "Fire", "Ice", "Steel", "Water" ]
+          },
+          "type": "Water",
+          "dex": "!weak Vaporeon"
+        },
+        "Ninetales": {
+          "max": "14914",
+          "counters": "Politoed, Dewgong, Qwilfish",
+          "type": "Fire",
+          "offense": {
+            "weak": [ "Ground", "Rock", "Water" ],
+            "resist": [ "Bug", "Fairy", "Fire", "Grass", "Ice", "Steel" ]
+          }
+        },
+        "Scyther": {
+          "max": "17358",
+          "counters": "Houndoom, Gilgar, Togetic",
+          "type": "Bug/Flying",
+          "offense": {
+            "weak": [ "Flying", "Fire", "Rock", "Electric", "Ice" ],
+            "resist": [ "Fighting", "Grass", "Ground", "Bug" ]
+          }
+        },
+        "Omastar": {
+          "max": "18915",
+          "counters": "Hitmontop, Machoke, Skiploom",
+          "type": "Rock/Water",
+          "offense": {
+            "weak": [ "Fighting", "Grass", "Ground", "Electric" ],
+            "resist": [ "Flying", "Fire", "Normal", "Poison", "Ice" ]
+          }
+        },
+        "Porygon": {
+          "max": "11419",
+          "counters": "Machamp, Hitmonchan, Machoke",
+          "type": "Normal",
+          "offense": {
+            "weak": [ "Fighting" ],
+            "resist": [ "Ghost" ]
+          }
+        }
+      }
+    },
+    {
+      "names": "4,four",
+      "required": "5+",
+      "pokemon": {
+        "Blastoise": {
+          "max": "24162",
+          "counters": "Exeggutor, Venusaur, Jolteon",
+          "offense": {
+            "weak": [ "Electric", "Grass" ],
+            "resist": [ "Fire", "Ice", "Steel", "Water" ]
+          },
+          "type": "Water",
+          "dex": "!weak Blastoise"
+        },
+        "Charizard": {
+          "max": "28485",
+          "counters": "Golem, Omastar, Sudowoodo",
+          "offense": {
+            "superweak": [ "Rock" ],
+            "weak": [ "Water", "Electric" ],
+            "resist": [ "Fairy", "Fire", "Steel", "Fighting" ],
+            "superresist": [ "Bug", "Grass" ]
+          },
+          "type": "Fire/Flying",
+          "dex": "!weak Charizard"
+        },
+        "Lapras": {
+          "max": "21768",
+          "counters": "Machamp, Heracross, Exeggutor",
+          "offense": {
+            "weak": [ "Electric", "Grass", "Fighting", "Rock" ],
+            "resist": [ "Water" ],
+            "superresist": [ "Ice" ]
+          },
+          "type": "Water/Ice",
+          "dex": "!weak Lapras"
+        },
+        "Rhydon": {
+          "max": "30512",
+          "counters": "Exeggutor, Venusaur, Victreebel",
+          "offense": {
+            "superweak": [ "Grass", "Water" ],
+            "weak": [ "Ice", "Fighting", "Ground", "Steel" ],
+            "resist": [ "Electric", "Rock", "Flying", "Fire", "Normal" ],
+            "superresist": [ "Poison" ]
+          },
+          "type": "Ground/Rock",
+          "dex": "!weak Rhydon"
+        },
+        "Snorlax": {
+          "max": "25419",
+          "counters": "Machamp, Heracross, Alakazam",
+          "offense": {
+            "weak": [ "Fighting" ],
+            "resist": [ "Ghost" ]
+          },
+          "type": "Normal",
+          "dex": "!weak Snorlax"
+        },
+        "Tyranitar": {
+          "max": "34707",
+          "counters": "Machamp, Heracross, Primeape",
+          "offense": {
+            "superweak": [ "Fighting" ],
+            "weak": [ "Grass", "Ground", "Steel", "Water", "Bug", "Fairy" ],
+            "resist": [ "Flying", "Fire", "Normal", "Poison", "Dark", "Ghost", "Psychic" ]
+          },
+          "type": "Rock/Dark",
+          "dex": "!weak Tyranitar"
+        },
+        "Venusaur": {
+          "max": "26921",
+          "counters": "Alakazam, Flareon, Espeon",
+          "offense": {
+            "weak": [ "Flying", "Fire", "Ice", "Psychic" ],
+            "resist": [ "Electric", "Water", "Fairy", "Fighting" ],
+            "superresist": [ "Grass" ]
+          },
+          "type": "Grass/Poison",
+          "dex": "!weak Venusaur"
+        },
+        "Poliwrath": {
+          "max": "24247",
+          "counters": "Venusaur, Vileplume, Electrode",
+          "type": "Water/Fighting",
+          "offense": {
+            "weak": [ "Electric", "Grass", "Fairy", "Flying", "Psychic" ],
+            "resist": [ "Fire", "Ice", "Steel", "Water", "Bug", "Dark", "Rock" ]
+          }
+        },
+        "Victreebel": {
+          "max": "23780",
+          "counters": "Aerodactyl, Ninetales, Fearow",
+          "type": "Grass/Poison",
+          "offense": {
+            "weak": [ "Flying", "Fire", "Ice", "Psychic" ],
+            "resist": [ "Electric", "Grass", "Water", "Fairy", "Fighting" ]
+          }
+        },
+        "Golem": {
+          "max": "30572",
+          "counters": "Nidoking, Omanyte, Magnemite",
+          "type": "Rock/Ground",
+          "offense": {
+            "weak": [ "Fighting", "Grass", "Ground", "Steel", "Water", "Ice" ],
+            "resist": [ "Flying", "Fire", "Normal", "Poison", "Electric", "Rock" ]
+          }
+        },
+        "Nidoking": {
+          "max": "24873",
+          "counters": "Slowking, Mr. Mime, Girafarig",
+          "type": "Poison/Ground",
+          "offense": {
+            "weak": [ "Ground", "Psychic", "Ice", "Water" ],
+            "resist": [ "Bug", "Fairy", "Fighting", "Poison", "Electric", "Rock" ]
+          }
+        },
+        "Nidoqueen": {
+          "max": "23216",
+          "counters": "Starmie, Sandslash, Drowzee",
+          "type": "Poison/Ground",
+          "offense": {
+            "weak": [ "Ground", "Psychic", "Ice", "Water" ],
+            "resist": [ "Bug", "Fairy", "Fighting", "Poison", "Electric", "Rock" ]
+          }
+        }
+      }
+    },
+    {
+      "names": "5,five",
+      "required": "8-20",
+      "pokemon": {
+        "Raikou": {
+          "required": "7+",
+          "max": "42932",
+          "rate": {
+            "base": "2"
+          },
+          "counters": "Golem, Rhydon, Tyranitar",
+          "type": "Electric",
+          "offense": {
+            "weak": [ "Ground" ],
+            "resist": [ "Electric", "Flying", "Steel" ]
+          }
+        },
+        "Mewtwo": {
+          "required": "18-20 Guessed",
+          "max": "49430",
+          "rate": {
+            "base": "2"
+          },
+          "counters": "Tyranitar, Houndoom, Scizor",
+          "offense": {
+            "weak": [ "Bug", "Ghost", "Dark" ],
+            "resist": [ "Fighting", "Psychic" ]
+          },
+          "type": "Psychic",
+          "dex": "!weak Mewtwo"
+        },
+        "Entei": {
+          "requied": "7+",
+          "max": "38628",
+          "rate": {
+            "base": "2"
+          },
+          "counters": "Omastar, Vaporeon, Golem",
+          "offense": {
+            "weak": [ "Ground", "Rock", "Water" ],
+            "resist": [ "Bug", "Fairy", "Fire", "Grass", "Ice", "Steel" ]
+          },
+          "type": "Fire",
+          "dex": "!weak Entei"
+        },
+        "Suicune": {
+          "required": "7+ Assumed",
+          "max": "34471",
+          "rate": {
+            "base": "2"
+          },
+          "counters": "Jolteon, Venusaur, Exeggutor",
+          "offense": {
+            "weak": [ "Electric", "Grass" ],
+            "resist": [ "Fire", "Ice", "Steel", "Water" ]
+          },
+          "type": "Water",
+          "dex": "!weak Suicune"
+        },
+        "Ho-Oh": {
+          "required": "8+ Assumed",
+          "max": "48276",
+          "rate": {
+            "base": "2"
+          },
+          "counters": "Golem, Omastar, Tyranitar",
+          "offense": {
+            "weak": [ "Rock", "Water", "Electric" ],
+            "resist": [ "Bug", "Fairy", "Fire", "Grass", "Steel", "Fighting" ]
+          },
+          "type": "Fire/Flying"
+        }
+      }
+    }
+  ]
+}

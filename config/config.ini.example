@@ -1,0 +1,23 @@
+{
+  "botname": "Professor Ivy",
+  "dbhost": "Your database host name",
+  "dbport": "3306",
+  "dbuser": "Your database user name",
+  "dbpass": "Your database password",
+  "dbname": "Your database name",
+  "discordtoken": "Your discord server token",
+  "adminUserId": "Your user ID here",
+  "roles": [
+    "put", "roles", "that", "are", "available", "to", "be", "auto", "assigned", "here", "Roles", "must", "be", "TitleCase"
+  ],
+  "cleanableChannelsIds": [
+    "Put", "channel", "ids", "here", "that", "you", "want", "to", "be", "able", "to", "be", "cleaned"
+  ],
+  "modules": [
+    "raid", "selfassignrole", "channelclean", "commands"
+  ],
+  "adminmodules": [
+    "commands"
+  ],
+  "welcomemessage": "When the welcome module is enabled, you put in here what you wish to send a person in a PM that joins your server."
+}
