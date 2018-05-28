@@ -4,8 +4,11 @@
   "private": true,
   "dependencies": {
     "discord.js": "^11.2.1",
+    "file-system": "2.2.2",
     "mysql": "^2.14.1",
-    "file-system": "2.2.2"
+    "npm": "^6.0.1",
+    "request": "2.85.0",
+    "request-promise": "^4.2.2"
   },
   "description": "Another Discord.js bot",
   "main": "ivy.js",

@@ -1,66 +1,156 @@
-var raid = function raid(message, cmd, config, commands) {
-    //message = object from discord.js
-    //cmd = the result of message.content.split(' ');
-    if (message.content.startsWith('!raid')) {
-        if (cmd[0] && cmd[1]) {
-            cmd[1] = cmd[1].toLowerCase();
-            let broke = false;
-            for (let i in commands.raids) {
-                let r = commands.raids[i].names.split(',');
-                for (let j in r) {
-                    if (r[j] === cmd[1]) {
-                        let n = Object.keys(commands.raids[i].pokemon);
-                        n = n.join(', ');
-                        let m = 'Required people estimate: ' + commands.raids[i].required + '\nPossibilities: ' + n;
-                        message.channel.send(m).then(m => {
+var raid = function raid(message, cmd, config, commands, con, richEmbed) {
+    const request = require('request-promise'),
+        fs = require('fs');
+
+    let d = new Date();
+    let m = d.getMonth();
+    d.setMonth(d.getMonth() - 1);
+    if (d.getMonth() == m) d.setDate(0);
+    d.setHours(0, 0, 0);
+    d.setMilliseconds(0);
+    let requests = [];
+
+// If the cache file doesn't exist or it's been around for longer than a month
+    if (!fs.existsSync('./cache/raids.json') || fs.statSync('./cache/raids.json').mtime < d) {
+        message.channel.send('Just a sec, updating cache...').then(m =>{
+            m.delete(10000);
+        });
+
+        // ToDo: Put into this script to update this url every now and again
+        requests.push(
+            request({uri: 'https://pokemongo.gamepress.gg/sites/pokemongo/files/pogo-jsons/raid-boss-list.json?v32', transform: (body) => {
+                let bosses = [];
+                let d = JSON.parse(body);
+                for (let i in d) {
+                    if (d[i].future === 'Off' && d[i].legacy === 'Off') {
+                        let id = d[i].image.split('href="/pokemon/')[1].split('"')[0];
+                        bosses.push({
+                            "id": id,
+                            "level": d[i].tier.split('raid-tier-stars">')[1].charAt(0),
+                            "name": d[i].title.split('hreflang="en">')[1].split('</')[0],
+                            "link": 'https://pokemongo.gamepress.gg' + d[i].title.split('href="')[1].split('"')[0],
+                            "image": 'https://monsterimages.tk/v1.5/regular/monsters/' + id + '_000.png', // 'https://pokemongo.gamepress.gg' + d[i].image.split('src="')[1].split('"')[0],
+                            "boss_cp": d[i].cp,
+                            "type": d[i].type.replace(/ /, '').replace(/,/, '/'),
+                            "min_cp": d[i].min_cp,
+                            "weather_boosted_min_cp": d[i].weather_min,
+                            "max_cp": d[i].max_cp,
+                            "weather_boosted_max_cp": d[i].weather_max,
+                            "catch_rate": d[i].catch_rate
+                        });
+                    }
+                }
+                fs.writeFile('./cache/raids.json', JSON.stringify(bosses), (err) => {
+                    if (err) {
+                        console.log(err);
+                        message.channel.send('Error saving raids cache file. See log for whole error').then(m => {
                             m.delete(10000);
                         });
-                        message.delete(0);
-                        broke = true;
-                        break;
                     }
+                });
+                return bosses;
+            }}).catch((err) => {
+                console.log(err.message);
+                message.channel.send('Error getting data. See log for full details.').then(m => {
+                    m.delete(10000);
+                });
+            })
+        );
+    }
+
+    let respond = (bosses = []) => {
+
+        /**
+         * Require all of the necessary files
+         */
+
+        if (bosses.length === 1) bosses = bosses[0];
+        let types = null;
+        try {
+            if (bosses.length === 0) {
+                bosses = JSON.parse(fs.readFileSync('./cache/raids.json'));
+            }
+            types = JSON.parse(fs.readFileSync('./cache/types.json'));
+        }
+        catch (e) {
+            console.log(e.message);
+            message.channel.send('Error attempting to load one of the required cache files. See log for whole error').then(m => {
+                m.delete(10000);
+            });
+            return 0;
+        }
+
+
+        /**
+         * Respond to the request
+         **/
+
+        cmd[1] = cmd[1].toLowerCase();
+        for (let i in bosses) {
+            if (bosses[i].name.toLowerCase() === cmd[1]) {
+                let boss = bosses[i];
+                let type = types.filter((obj) => {
+                    let a = obj.name.toLowerCase();
+                    let b = boss.type.toLowerCase();
+                    if (a === b) return true;
+                    a = a.split('/');
+                    b = b.split('/');
+                    if (a.length > 1 && b.length > 1) {
+                        if (a[0] === b[1] && a[1] === b[0]) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+                let embedColor = '';
+                if (typeof type[0] !== 'undefined') {
+                    type = type[0];
+                    let mainType = type.name;
+                    if (type.name.includes('/')) mainType = type.name.split('/')[0];
+                    if (typeof assets['typeColors'][mainType.toLowerCase()] !== 'undefined') embedColor = assets['typeColors'][mainType.toLowerCase()];
                 }
-                if (broke) {
+                else {
+                    message.channel.send('Type not found in types array. Please check data.').then(m => {
+                        m.delete(10000);
+                    });
                     break;
                 }
-                for (let j in commands.raids[i].pokemon) {
-                    if (cmd[1] === j.toLowerCase()) {
-                        let n = `**Pokemon:** ${ j }\n`;
-                        n += `**Max CP:** ${ commands.raids[i].pokemon[j].max }\n`;
-                        n += `**Best With:** ${ commands.raids[i].pokemon[j].counters }`;
-                        //n += `**Related:** ${ commands.raids[i].pokemon[j].dex }`;
-                        if (commands.raids[i].pokemon[j].rate) {
-                            n += `\n**Base Catch Rate:** ${ commands.raids[i].pokemon[j].rate.base }%`;
-                        }
-                        if (commands.raids[i].pokemon[j].offense.superweak) {
-                            n += `\n**1.96x Effective:** ${ commands.raids[i].pokemon[j].offense.superweak.join(', ') }`;
-                        }
-                        if (commands.raids[i].pokemon[j].offense.weak) {
-                            n += `\n**1.4x Effective:** ${ commands.raids[i].pokemon[j].offense.weak.join(', ') }`;
-                        }
-                        if (commands.raids[i].pokemon[j].offense.neutral) {
-                            n += `\n**1x Effective:** ${ commands.raids[i].pokemon[j].offense.neutral.join(', ') }`;
-                        }
-                        if (commands.raids[i].pokemon[j].offense.resist) {
-                            n += `\n**0.71x Effective:** ${ commands.raids[i].pokemon[j].offense.resist.join(', ') }`;
-                        }
-                        if (commands.raids[i].pokemon[j].offense.superresist) {
-                            n += `\n**0.51x Effective:** ${ commands.raids[i].pokemon[j].offense.superresist.join(', ') }`;
-                        }
-                        message.channel.send(n).then(m => {
-                            m.delete(100000);
-                        });
-                        message.delete(0);
-                        broke = true;
-                        break;
+                delete type.name;
+                let typeText = '```diff\n';
+                let first = true;
+                for (let i in type) {
+                    if (!first) {
+                        typeText += '\n';
                     }
+                    let modifier = parseFloat(i.replace(/x/, '')) > 1 ? '+' : '-';
+                    typeText += modifier + ' ' + i + ': ' + type[i].replace(/,/g, ', ');
+                    first = false;
                 }
-                if (broke) {
-                    break;
+                typeText += '\n```';
+                const embed = richEmbed
+                    .setTitle(boss.name)
+                    .setThumbnail(boss.image)
+                    .setURL(boss.link)
+                    .addField('CP', boss.min_cp + '-' + boss.max_cp)
+                    .addField('Weather Boosted CP', boss.weather_boosted_min_cp + '-' + boss.weather_boosted_max_cp)
+                    .addField('Type: ' + boss.type, typeText)
+                    .addField('Raid Level', boss.level)
+                    .addField('Base Catch Rate', boss.catch_rate);
+                if (embedColor !== ''){
+                    embed.setColor(embedColor);
                 }
+                message.channel.send({embed});
+                break;
             }
         }
+    };
+
+    if (requests.length !== 0){
+        Promise.all(requests).then(respond);
     }
-}
+    else{
+        respond();
+    }
+};
 
 module.exports = raid;

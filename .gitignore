@@ -1,3 +1,5 @@
 /config/config.ini
 .idea/*
 node_modules/*
+/cache/*
+!/cache/types.json

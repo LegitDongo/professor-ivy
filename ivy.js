@@ -17,6 +17,7 @@ var fs              = require('fs'),
 const   Discord     = require('discord.js'),
         client      = new Discord.Client()
 ;
+
 //Music example
 //https://stackoverflow.com/questions/40200869/queuing-audio-to-play-via-discord-bot
 
@@ -97,9 +98,16 @@ var clientmessage = message => {
         }
     });
 
+    // Load json assets (intentionally a global var)
+    assets = {};
+    fs.readdirSync('./src/assets').forEach(function (file) {
+        assets[file.replace(/\.json$/, '')] = require('./src/assets/' + file);
+    });
+
+    let richEmbed = new Discord.RichEmbed();
     let cmd = message.content.split(' ');
     modules.forEach(callback => {
-        callback(message, cmd, config, commands, con);
+        callback(message, cmd, config, commands, con, richEmbed);
     });
 
 
@@ -107,7 +115,7 @@ var clientmessage = message => {
     //admin commands
     if (message.member.hasPermission("ADMINISTRATOR")) {
         adminmodules.forEach(callback => {
-            callback(message, cmd, config, commands, con);
+            callback(message, cmd, config, commands, con, richEmbed);
         });
     }
 };
