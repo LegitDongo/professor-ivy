@@ -1,4 +1,5 @@
 var raid = function raid(message, cmd, config, commands, con, richEmbed) {
+    if (!cmd[1]) return;
     const request = require('request-promise'),
         fs = require('fs');
 

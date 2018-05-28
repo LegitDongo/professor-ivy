@@ -7,7 +7,6 @@
   },
   "all": {
     "!ivy cmd {page_num}": "Access common command/response command list by sets of 10",
-    "!raid {raid level}": "Get all probable pokemon from a raid level",
     "!raid {pokemon name}": "Get all information about a raid boss",
     ".iam {role name}": "Assign yourself to {role name}",
     ".iamnot {role name}": "Remove yourself from {role name}"

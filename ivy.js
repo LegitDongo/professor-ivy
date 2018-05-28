@@ -35,26 +35,26 @@ var appexit = (err = null) => {
            console.log(err);
         });
     }
-    con.end();
+    // con.end();
     process.exit();
 };
 
-con.connect(err => {
-   if (err) appexit(err);
-   console.log(`${ config.dbhost } connection successful`);
-   //check if database exists:
-   //  con.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '${ config.dbname }'`, (err, results, fields) =>{
-   //      if (err) appexit(err);
-   //      if (!results[0]) {
-   //          console.log(`${ config.dbname } does not exist. Create the database first!`);
-   //          appexit();
-   //      }
-        // for //loop through create table scripts in seperate config-like file
-        // con.query('CREATE TABLE responses (Id INT, term VARCHAR(50), response VARCHAR(150) Creator VARCHAR(50)', (err, result) =>{
-        //
-        // });
-    //});
-});
+// con.connect(err => {
+//    if (err) appexit(err);
+//    console.log(`${ config.dbhost } connection successful`);
+//    //check if database exists:
+//    //  con.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '${ config.dbname }'`, (err, results, fields) =>{
+//    //      if (err) appexit(err);
+//    //      if (!results[0]) {
+//    //          console.log(`${ config.dbname } does not exist. Create the database first!`);
+//    //          appexit();
+//    //      }
+//         // for //loop through create table scripts in seperate config-like file
+//         // con.query('CREATE TABLE responses (Id INT, term VARCHAR(50), response VARCHAR(150) Creator VARCHAR(50)', (err, result) =>{
+//         //
+//         // });
+//     //});
+// });
 
 var clientready = () => {
     //ToDo: Set the nickname of the bot to botname
@@ -67,6 +67,7 @@ var clientready = () => {
     for(let i in config.adminmodules){
         adminmodules.push(require('./src/modules/admin/' + config.adminmodules[i] + '.js'));
     }
+    client.user.setGame('Type !help for help');
     console.log(`Running ${ botname }`);
 };
 
@@ -91,12 +92,12 @@ var clientmessage = message => {
     if (message.channel.type !== 'text') return;
 
     //check to see if it has a response
-    con.query("SELECT * FROM responses WHERE LOWER(term) = ?", message.content.toLowerCase(), (err, results, fields) => {
-        if (err) appexit(err);
-        if (results[0]) {
-            message.channel.send(results[0].response);
-        }
-    });
+    // con.query("SELECT * FROM responses WHERE LOWER(term) = ?", message.content.toLowerCase(), (err, results, fields) => {
+    //     if (err) appexit(err);
+    //     if (results[0]) {
+    //         message.channel.send(results[0].response);
+    //     }
+    // });
 
     // Load json assets (intentionally a global var)
     assets = {};
