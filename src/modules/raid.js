@@ -1,5 +1,5 @@
 var raid = function raid(message, cmd, config, commands, con, richEmbed) {
-    if (!cmd[1]) return;
+    if (cmd[0] !== '!raid' || typeof cmd[1] === 'undefined') return;
     const request = require('request-promise'),
         fs = require('fs');
 
