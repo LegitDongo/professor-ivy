@@ -34,6 +34,7 @@ A few of the features include (in modules):
 5. `adminmodules` - all admin modules that you want loaded - these are located in `/src/modules/admin/*`
 6. `cleanableChannelsIds` - for the channelclean module, these channels will be cleanable when you type in `!clean`
     * NOTE: You can only delete messages newer than 14 days
+7. `forcedChannelId` - Channel id to report changes in game update forced status
 
 ## Run
 `node ivy.js`
@@ -114,6 +115,21 @@ For example, in removing the channelclean module, the `modules` section would lo
 ```
 ***Keep in mind this removes the double quotes and extra comma as well***
 
+### Runners
+Runners are basically a module that is only run once, and are located under `modules/runners`.
+
+As like normal modules, these are defined in an array in `config/config.ini.example` in `runners`
+```
+  "runners": [
+    "forced"
+  ],
+```
+
+For those of you developing your own runners or modules, this is where you'd put things that either
+only run once or need to run repeatedly (such as `setTimeout` or `setInterval`). This way, things won't
+repeatedly get called and created, causing forever-growing memory requirements.
+
+
 ## Creating Your Own Module
 
 If you feel yourself tech savvy and think Ivy could use some neat new features, feel free to
@@ -142,6 +158,9 @@ It will be reviewed promptly and responded to when time allows.
     limitations only allows for deletion up to 14 days prior.
 * `!ivy commands`
     * This is explained in more detail in the above sections
+* Forced Checker
+    * Checks the status of the game update's forced version every hour.
+    * Notifies to channel of choice (through the config file's `forcedChannelId`) when an update is forced or reverted.
 
 I hope you enjoy this project! ^-^
 

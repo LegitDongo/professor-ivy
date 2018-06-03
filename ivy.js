@@ -60,13 +60,25 @@ var clientready = () => {
     //ToDo: Set the nickname of the bot to botname
     //ToDo: Join music voice channel
 
-    //Load all modules
+    // Load all modules
     for(let i in config.modules){
         modules.push(require('./src/modules/' + config.modules[i] + '.js'));
     }
+
+    // Load admin-only modules
     for(let i in config.adminmodules){
         adminmodules.push(require('./src/modules/admin/' + config.adminmodules[i] + '.js'));
     }
+
+    // Load and execute runners -- run once then not looked at again
+    let runners = [];
+    for(let i in config.runners){
+        runners.push(require('./src/runners/' + config.runners[i] + '.js'));
+    }
+    runners.forEach(callback => {
+        callback(client, config, commands); // , con
+    });
+
     client.user.setGame('Type !help for help');
     console.log(`Running ${ botname }`);
 };
@@ -110,8 +122,6 @@ var clientmessage = message => {
     modules.forEach(callback => {
         callback(message, cmd, config, commands, con, richEmbed);
     });
-
-
 
     //admin commands
     if (message.member.hasPermission("ADMINISTRATOR")) {
