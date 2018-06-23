@@ -4,9 +4,9 @@ var trade = function commands(message, cmd, config, commands, con) {
     //cmd = the result of message.content.split(' ');
     if (cmd[0] === '!trade' && typeof cmd[1] !== 'undefined') {
         let tag = cmd.slice(1).join('').toLowerCase();
-        con.query('SELECT tu.nickname, tu.trainerCode FROM tradeTags AS tt ' +
-            'INNER JOIN tradeUserTags AS tut ON tt.id = tut.tagId ' +
-            'INNER JOIN tradeUsers AS tu ON  tut.userId = tu.id ' +
+        con.query('SELECT tu.nickname, tu.trainerCode FROM tradetags AS tt ' +
+            'INNER JOIN tradeusertags AS tut ON tt.id = tut.tagId ' +
+            'INNER JOIN tradeusers AS tu ON  tut.userId = tu.id ' +
             'WHERE LOWER(tt.name) LIKE ?', ['%' + tag + '%'], (err, results, fields) => {
             if (err){
                 console.log(err);
@@ -24,7 +24,7 @@ var trade = function commands(message, cmd, config, commands, con) {
                 message.channel.send('```\n'+mesg+'```');
             }
             else{
-                con.query('SELECT nickname, trainerCode FROM tradeUsers WHERE LOWER(nickname) LIKE ? OR LOWER(username) LIKE ? or userId LIKE ?', ['%'+tag+'%', '%'+tag+'%', '%'+tag+'%'], (err2, results2) => {
+                con.query('SELECT nickname, trainerCode FROM tradeusers WHERE LOWER(nickname) LIKE ? OR LOWER(username) LIKE ? or userId LIKE ?', ['%'+tag+'%', '%'+tag+'%', '%'+tag+'%'], (err2, results2) => {
                     if (results2.length === 0 || err2){
                         if (err2) console.log(err2);
                         message.channel.send('There is either no user, no tag, or no people signed up for this tag matching that request. Please try again.').then(m => {
@@ -54,7 +54,7 @@ var trade = function commands(message, cmd, config, commands, con) {
         let nick = false;
         if (typeof user !== 'undefined'){
             nick = user.nickname;
-            con.query('SELECT * FROM tradeUsers WHERE userId = ?', [ user.id ], (err, results, fields) => {
+            con.query('SELECT * FROM tradeusers WHERE userId = ?', [ user.id ], (err, results, fields) => {
                 if (err){
                     console.log(err);
                     message.channel.send('There was an issue setting your nickname. See log for further details.').then(m => {
@@ -64,7 +64,7 @@ var trade = function commands(message, cmd, config, commands, con) {
                 }
                 if (results.length === 0){
                     // user does not exist and trainer code should be added with new roles
-                    con.query('INSERT INTO tradeUsers (trainerCode, username, nickname, userId) VALUES(?,?,?,?)', [ code, user.displayName, nick, user.id ], (err2) => {
+                    con.query('INSERT INTO tradeusers (trainerCode, username, nickname, userId) VALUES(?,?,?,?)', [ code, user.displayName, nick, user.id ], (err2) => {
                        if (err2){
                            console.log(err2);
                            message.channel.send('There was an issue adding your trainer code to the database. See log for further details.').then(m => {
@@ -83,7 +83,7 @@ var trade = function commands(message, cmd, config, commands, con) {
                        }
                        if (addRoles.length !== 0){
                            // have array of tag names, but need corresponding ids from database
-                           con.query('INSERT INTO tradeUserTags(tagId, userId) SELECT id as tagId, (SELECT id FROM tradeUsers WHERE userId = "'+user.id+'") as userId FROM tradeTags  WHERE name IN (' + '?,'.repeat(addRoles.length).slice(0, -1) + ')', addRoles, (err3, results2) => {
+                           con.query('INSERT INTO tradeusertags(tagId, userId) SELECT id as tagId, (SELECT id FROM tradeusers WHERE userId = "'+user.id+'") as userId FROM tradetags  WHERE name IN (' + '?,'.repeat(addRoles.length).slice(0, -1) + ')', addRoles, (err3, results2) => {
                                if (err3){
                                    console.log(err3);
                                    message.channel.send('There was an issue setting tag information. See log for further details.').then(m => {
@@ -106,7 +106,7 @@ var trade = function commands(message, cmd, config, commands, con) {
                 }
                 else {
                     // user exists already and trainer code should be updated
-                    con.query('UPDATE tradeUsers SET trainerCode = ?, nickname = ? WHERE userId = ?', [ code, user.displayName, user.id ], (err2) => {
+                    con.query('UPDATE tradeusers SET trainerCode = ?, nickname = ? WHERE userId = ?', [ code, user.displayName, user.id ], (err2) => {
                         if (err2){
                             console.log(err2);
                             message.channel.send('There was an issue updating your trainer code. See log for further details.').then(m => {
