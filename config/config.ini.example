@@ -15,7 +15,7 @@
     "Put", "channel", "ids", "here", "that", "you", "want", "to", "be", "able", "to", "be", "cleaned"
   ],
   "modules": [
-    "raid", "selfassignrole", "channelclean", "commands"
+    "raid", "selfassignrole", "channelclean", "commands", "trade"
   ],
   "adminmodules": [
     "commands"
@@ -23,5 +23,11 @@
   "runners": [
     "forced"
   ],
-  "welcomemessage": "When the welcome module is enabled, you put in here what you wish to send a person in a PM that joins your server."
+  "welcomemessage": "When the welcome module is enabled, you put in here what you wish to send a person in a PM that joins your server.",
+  "tradetags": [
+    "a list of trade tags, each representing a role on your server that you want your users to search by",
+    "mystic",
+    "instinct",
+    "town name"
+  ]
 }

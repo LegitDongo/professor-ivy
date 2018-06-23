@@ -35,6 +35,7 @@ A few of the features include (in modules):
 6. `cleanableChannelsIds` - for the channelclean module, these channels will be cleanable when you type in `!clean`
     * NOTE: You can only delete messages newer than 14 days
 7. `forcedChannelId` - Channel id to report changes in game update forced status
+8. `tradetags` - roles allowed to behave as a tag for trading
 
 ## Run
 `node ivy.js`
@@ -161,6 +162,10 @@ It will be reviewed promptly and responded to when time allows.
 * Forced Checker
     * Checks the status of the game update's forced version every hour.
     * Notifies to channel of choice (through the config file's `forcedChannelId`) when an update is forced or reverted.
+* `!trade {tag|username|nickname|userid}` and `!register {trade code}`
+    * A registry for trade codes based on tags
+    * A tag is registered by assigned roles for a person.
+    * A person *must* be assigned a role for this to work for them.
 
 I hope you enjoy this project! ^-^
 
