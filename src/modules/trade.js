@@ -106,7 +106,7 @@ var trade = function commands(message, cmd, config, commands, con) {
                 }
                 else {
                     // user exists already and trainer code should be updated
-                    con.query('UPDATE tradeUsers SET trainerCode = ? AND nickname = ? WHERE userId = ?', [ code, user.displayName, user.id ], (err2) => {
+                    con.query('UPDATE tradeUsers SET trainerCode = ?, nickname = ? WHERE userId = ?', [ code, user.displayName, user.id ], (err2) => {
                         if (err2){
                             console.log(err2);
                             message.channel.send('There was an issue updating your trainer code. See log for further details.').then(m => {
