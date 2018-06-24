@@ -53,7 +53,7 @@ var trade = function commands(message, cmd, config, commands, con) {
         let user = message.member;
         let nick = false;
         if (typeof user !== 'undefined'){
-            nick = user.nickname;
+            nick = user.nickname == null ? user.displayName : user.nickname;
             con.query('SELECT * FROM tradeusers WHERE userId = ?', [ user.id ], (err, results, fields) => {
                 if (err){
                     console.log(err);
