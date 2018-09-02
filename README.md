@@ -124,7 +124,7 @@ Runners are basically a module that is only run once, and are located under `mod
 As like normal modules, these are defined in an array in `config/config.ini.example` in `runners`
 ```
   "runners": [
-    "forced"
+    "forced", "pogo-news"
   ],
 ```
 
