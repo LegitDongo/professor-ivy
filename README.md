@@ -36,6 +36,8 @@ A few of the features include (in modules):
     * NOTE: You can only delete messages newer than 14 days
 7. `forcedChannelId` - Channel id to report changes in game update forced status
 8. `tradetags` - roles allowed to behave as a tag for trading
+9. `newsChannelId` - Channel id to post new news from pogo - nothing will be posted when initially run since Ivy 
+doesn't know what's new!
 
 ## Run
 `node ivy.js`
@@ -166,6 +168,9 @@ It will be reviewed promptly and responded to when time allows.
     * A registry for trade codes based on tags
     * A tag is registered by assigned roles for a person.
     * A person *must* be assigned a role for this to work for them.
+* Pogo News Poster
+    * Checks if new news is posted from pogo every hour.
+    * Notifies to the channel of choice (through the config file's `newsChannelId`) when something new is posted by them.
 
 I hope you enjoy this project! ^-^
 

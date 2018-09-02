@@ -8,6 +8,7 @@
   "discordtoken": "Your discord server token",
   "adminUserId": "Your user ID here",
   "forcedChannelId": "ID of the channel you wish to have forced messages on",
+  "newsChannelId": "ID of the channel you wish for news to be posted",
   "roles": [
     "put", "roles", "that", "are", "available", "to", "be", "auto", "assigned", "here", "Roles", "must", "be", "TitleCase"
   ],
