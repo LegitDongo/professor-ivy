@@ -30,7 +30,7 @@ var forcedCheck = function forcedCheck(client, config, commands, con) {
                         jsonData.forced = ver;
                         write = true;
                     }
-                    else if (parseInt(jsonData.forced.replace(/\./g, '')) > verInt) {
+                    else if (parseInt(jsonData.forced.replace(/\./g, '')) < verInt) {
                         console.log('New version forced! Now on version ' + ver);
                         // Message to channel about new force
                         client.channels.get(config.forcedChannelId)
@@ -40,7 +40,7 @@ var forcedCheck = function forcedCheck(client, config, commands, con) {
                         jsonData.forced = ver;
                         write = true;
                     }
-                    else if (parseInt(jsonData.forced.replace(/\./g, '')) < verInt){
+                    else if (parseInt(jsonData.forced.replace(/\./g, '')) > verInt){
                         console.log('Forced version reverted! Back on version ' + ver);
                         // Message to channel about reversion
                         client.channels.get(config.forcedChannelId)
