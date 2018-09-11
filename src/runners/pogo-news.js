@@ -5,7 +5,12 @@ var pogonews = function pogonews(client, config) {
         let fs = require('fs');
         let cheerio = require('cheerio');
         (function pogoNewsGet() {
-            request('https://pokemongolive.com/en/post').then((e) => {
+            request({
+                'url': 'https://pokemongolive.com/en/post',
+                'headers': {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
+                }
+            }).then((e) => {
                 let $ = cheerio.load(e);
                 let newsPosts = [];
                 $('.post-list a').each(function(){
@@ -54,7 +59,7 @@ var pogonews = function pogonews(client, config) {
                     }
                 });
             });
-            setTimeout(pogoNewsGet, 3600000); // Exactly 1 hour
+            setTimeout(pogoNewsGet, 300000);
         })();
     }
 };

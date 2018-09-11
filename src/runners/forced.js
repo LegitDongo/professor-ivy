@@ -4,7 +4,12 @@ var forcedCheck = function forcedCheck(client, config, commands, con) {
         let request = require('request-promise');
         let fs = require('fs');
         (function checkForced() {
-            request('https://pgorelease.nianticlabs.com/plfe/version').then((e) => {
+            request({
+                'url': 'https://pgorelease.nianticlabs.com/plfe/version',
+                'headers': {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
+                }
+            }).then((e) => {
                 if (!fs.existsSync('./cache/main.json')) {
                     fs.writeFile('./cache/main.json', JSON.stringify({'forced': e.substr(2)}), (err) => {
                         if (err) {
@@ -61,7 +66,7 @@ var forcedCheck = function forcedCheck(client, config, commands, con) {
                     }
                 });
             });
-            setTimeout(checkForced, 3600000); // Exactly 1 hour
+            setTimeout(checkForced, 300000);
         })();
     }
 };
