@@ -7,9 +7,9 @@ A few of the features include (in modules):
 * Modularized commands
 
 ## Requirements
-1. mysql
-2. node.js
-3. An available discord server with Admin (or equivalent) permissions
+1. node.js
+2. An available discord server with Admin (or equivalent) permissions
+3. (Optional) MySql or equivalent
 
 ## Install Dependencies
 1. `npm install`
@@ -20,11 +20,7 @@ A few of the features include (in modules):
 3. Include/disclude any modules
 
 ### Required Config Options
-1. `dbhost` - database host name
-2. `dbuser` - database user name
-3. `dbpass` - database password
-4. `dbname` - database name
-5. `discordtoken` - bot discord token
+1. `discordtoken` - bot discord token
 
 ### Optional Config Options
 1. `botname` - will be expanding on later
@@ -36,8 +32,14 @@ A few of the features include (in modules):
     * NOTE: You can only delete messages newer than 14 days
 7. `forcedChannelId` - Channel id to report changes in game update forced status
 8. `tradetags` - roles allowed to behave as a tag for trading
-9. `newsChannelId` - Channel id to post new news from pogo - nothing will be posted when initially run since Ivy 
-doesn't know what's new!
+9. `newsChannelId` - Channel id to post new news from pogo - nothing will be posted when initially run since Ivy
+doesn't know what's new! 
+10. Database parameters - when specified, these must all be specified
+    1. `dbhost` - database host name
+    2. `dbuser` - database user name
+    3. `dbpass` - database password
+    4. `dbname` - database name
+
 
 ## Run
 `node ivy.js`
@@ -52,6 +54,10 @@ There are a different set of commands based on the modules for admins.
 This will give a broad overview of all commands, including all module commands.
 
 ## Database Commands/Responses
+<aside class="warning">
+You must have the `database` runner (as well as `admin/commands`) enabled for this to work
+</aside>
+
 With this set of commands you can do the following:
 * Get a list of all commands on the database (by page)
 * Add/Update/Remove commands from database
@@ -124,7 +130,7 @@ Runners are basically a module that is only run once, and are located under `mod
 As like normal modules, these are defined in an array in `config/config.ini.example` in `runners`
 ```
   "runners": [
-    "forced", "pogo-news"
+    "database", "forced", "pogo-news"
   ],
 ```
 
@@ -138,6 +144,10 @@ repeatedly get called and created, causing forever-growing memory requirements.
 If you feel yourself tech savvy and think Ivy could use some neat new features, feel free to
 create your own module and add it to either the `src/modules`, or `src/modules/admin`, enable it in your
 config file, and use it along with Ivy!
+
+<aside class="warning">
+All database tables that are required must have the DDL entered into the `database` runner.
+</aside>
 
 ***Note: We cannot support custom code***
 
@@ -162,14 +172,15 @@ It will be reviewed promptly and responded to when time allows.
 * `!ivy commands`
     * This is explained in more detail in the above sections
 * Forced Checker
-    * Checks the status of the game update's forced version every hour.
+    * Checks the status of the game update's forced version.
     * Notifies to channel of choice (through the config file's `forcedChannelId`) when an update is forced or reverted.
 * `!trade {tag|username|nickname|userid}` and `!register {trade code}`
+    * Requires the `database` runner to be enabled
     * A registry for trade codes based on tags
     * A tag is registered by assigned roles for a person.
     * A person *must* be assigned a role for this to work for them.
 * Pogo News Poster
-    * Checks if new news is posted from pogo every hour.
+    * Checks if new news is posted from pogo.
     * Notifies to the channel of choice (through the config file's `newsChannelId`) when something new is posted by them.
 
 I hope you enjoy this project! ^-^

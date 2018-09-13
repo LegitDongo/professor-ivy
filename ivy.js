@@ -3,17 +3,22 @@ var fs              = require('fs'),
     commands        = JSON.parse(fs.readFileSync('./ivy/commands.json')),//require('./ivy/commands.json'),
     mysql           = require('mysql'),
     botname         = config.botname ? config.botname : 'Professor Ivy', //use this to change the nickname -- https://discord.js.org/#/docs/main/stable/class/GuildMember?scrollTo=setNickname
-    con             = mysql.createConnection({
+    modules = [],
+    adminmodules = [],
+    con = false
+;
+
+if (typeof config.runners !== 'undefined' && config.runners.indexOf('database') !== -1){
+    con = mysql.createConnection({
         host: config.dbhost,
         port: config.dbport ? config.dbport : 3306,
         user: config.dbuser,
         password: config.dbpass,
         database: config.dbname,
         charset: 'utf8mb4'
-    }),
-    modules = [],
-    adminmodules = []
-;
+    });
+}
+
 const   Discord     = require('discord.js'),
         client      = new Discord.Client()
 ;
@@ -25,7 +30,7 @@ String.prototype.toProperCase = function () {
     return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 };
 
-var appexit = (err = null) => {
+global.appexit = (err = null) => {
     if (err){
         console.log("\x1b[31m%s\x1b[0m", err);
     }
@@ -35,26 +40,16 @@ var appexit = (err = null) => {
            console.log(err);
         });
     }
-    con.end();
+    if (con) con.end();
     process.exit();
 };
 
-con.connect(err => {
-   if (err) appexit(err);
-   console.log(`${ config.dbhost } connection successful`);
-   //check if database exists:
-   //  con.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '${ config.dbname }'`, (err, results, fields) =>{
-   //      if (err) appexit(err);
-   //      if (!results[0]) {
-   //          console.log(`${ config.dbname } does not exist. Create the database first!`);
-   //          appexit();
-   //      }
-        // for //loop through create table scripts in seperate config-like file
-        // con.query('CREATE TABLE responses (Id INT, term VARCHAR(50), response VARCHAR(150) Creator VARCHAR(50)', (err, result) =>{
-        //
-        // });
-    //});
-});
+if (con) {
+    con.connect(err => {
+        if (err) appexit(err);
+        console.log(`${ config.dbhost } connection successful`);
+    });
+}
 
 var clientready = () => {
     //ToDo: Set the nickname of the bot to botname
@@ -76,7 +71,7 @@ var clientready = () => {
         runners.push(require('./src/runners/' + config.runners[i] + '.js'));
     }
     runners.forEach(callback => {
-        callback(client, config, commands); // , con
+        callback(client, config, commands, con);
     });
 
     client.user.setGame('Type !help for help');
@@ -103,13 +98,15 @@ var clientmessage = message => {
     //don't respond if not on a text chat
     if (message.channel.type !== 'text') return;
 
-    //check to see if it has a response
-    con.query("SELECT * FROM responses WHERE LOWER(term) = ?", message.content.toLowerCase(), (err, results, fields) => {
-        if (err) appexit(err);
-        if (results[0]) {
-            message.channel.send(results[0].response);
-        }
-    });
+    if (con) {
+        //check to see if it has a response
+        con.query("SELECT * FROM responses WHERE LOWER(term) = ?", message.content.toLowerCase(), (err, results, fields) => {
+            if (err) appexit(err);
+            if (results[0]) {
+                message.channel.send(results[0].response);
+            }
+        });
+    }
 
     // Load json assets (intentionally a global var)
     assets = {};

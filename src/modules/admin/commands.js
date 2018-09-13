@@ -1,7 +1,7 @@
 var commands = function commands(message, cmd, config, commands, con){
     //message = object from discord.js
     //cmd = the result of message.content.split(' ');
-    if (message.content.startsWith('.cmd')) {
+    if (message.content.startsWith('.cmd') && con) {
         if (/"/.test(message.content)) {
             //grab all items with opening/closing double quotes
             let match = message.content.match(/"(.*?)"/g);

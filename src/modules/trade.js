@@ -2,7 +2,7 @@
 var trade = function commands(message, cmd, config, commands, con) {
     //message = object from discord.js
     //cmd = the result of message.content.split(' ');
-    if (cmd[0] === '!trade' && typeof cmd[1] !== 'undefined') {
+    if (cmd[0] === '!trade' && typeof cmd[1] !== 'undefined' && con) {
         let tag = cmd.slice(1).join(' ').toLowerCase();
         con.query('SELECT tu.nickname, tu.trainerCode FROM tradetags AS tt ' +
             'INNER JOIN tradeusertags AS tut ON tt.id = tut.tagId ' +

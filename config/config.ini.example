@@ -22,7 +22,7 @@
     "commands"
   ],
   "runners": [
-    "forced", "pogo-news"
+    "database", "forced", "pogo-news"
   ],
   "welcomemessage": "When the welcome module is enabled, you put in here what you wish to send a person in a PM that joins your server.",
   "tradetags": [
