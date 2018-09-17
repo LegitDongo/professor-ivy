@@ -9,7 +9,8 @@ var fs              = require('fs'),
 ;
 
 if (typeof config.runners !== 'undefined' && config.runners.indexOf('database') !== -1){
-    con = mysql.createConnection({
+    con = mysql.createPool({
+        connectionLimit: 10,
         host: config.dbhost,
         port: config.dbport ? config.dbport : 3306,
         user: config.dbuser,
@@ -43,13 +44,6 @@ global.appexit = (err = null) => {
     if (con) con.end();
     process.exit();
 };
-
-if (con) {
-    con.connect(err => {
-        if (err) appexit(err);
-        console.log(`${ config.dbhost } connection successful`);
-    });
-}
 
 var clientready = () => {
     //ToDo: Set the nickname of the bot to botname

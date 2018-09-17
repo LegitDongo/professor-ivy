@@ -19,11 +19,15 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
 
         // ToDo: Put into this script to update this url every now and again
         requests.push(
-            request({uri: 'https://pokemongo.gamepress.gg/sites/pokemongo/files/pogo-jsons/raid-boss-list.json?v32', transform: (body) => {
-                let bosses = [];
-                let d = JSON.parse(body);
-                for (let i in d) {
-                    if (d[i].future === 'Off' && d[i].legacy === 'Off') {
+            request({
+                'url': 'https://pokemongo.gamepress.gg/sites/pokemongo/files/pogo-jsons/raid-boss-list.json?v32',
+                'headers': {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
+                },
+                transform: (body) => {
+                    let bosses = [];
+                    let d = JSON.parse(body);
+                    for (let i in d) {
                         let id = d[i].image.split('href="/pokemon/')[1].split('"')[0];
                         bosses.push({
                             "id": id,
@@ -40,17 +44,17 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
                             "catch_rate": d[i].catch_rate
                         });
                     }
+                    fs.writeFile('./cache/raids.json', JSON.stringify(bosses), (err) => {
+                        if (err) {
+                            console.log(err);
+                            message.channel.send('Error saving raids cache file. See log for whole error').then(m => {
+                                m.delete(10000);
+                            });
+                        }
+                    });
+                    return bosses;
                 }
-                fs.writeFile('./cache/raids.json', JSON.stringify(bosses), (err) => {
-                    if (err) {
-                        console.log(err);
-                        message.channel.send('Error saving raids cache file. See log for whole error').then(m => {
-                            m.delete(10000);
-                        });
-                    }
-                });
-                return bosses;
-            }}).catch((err) => {
+            }).catch((err) => {
                 console.log(err.message);
                 message.channel.send('Error getting data. See log for full details.').then(m => {
                     m.delete(10000);
