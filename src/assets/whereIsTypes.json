@@ -1,0 +1,24 @@
+[
+  {
+    "name": "monocle",
+    "queries": [
+      {
+        "type": "gym",
+        "query": "SELECT 'gym' AS type, 'https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/static_assets/png/gymLogo.png' AS thumbnail, lat AS latitude, lon as longitude, name, url AS image, '' AS description FROM {dbname}.forts"
+      },
+      {
+        "type": "stop",
+        "query": "SELECT 'stop' AS type, 'https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/static_assets/png/pokestop_near.png' AS thumbnail, name, lat as latitude, lon as longitude FROM {dbname}.pokestops"
+      }
+    ]
+  },
+  {
+    "name": "rocketmap",
+    "queries": [
+      {
+        "type": "gym",
+        "query": "SELECT 'gym' AS type, 'https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/static_assets/png/gymLogo.png' AS thumbnail, g.latitude, g.longitude, gd.name, gd.url AS image, gd.description FROM {dbname}.gym AS g INNER JOIN {dbname}.gymdetails AS gd WHERE gd.gym_id = g.gym_id"
+      }
+    ]
+  }
+]

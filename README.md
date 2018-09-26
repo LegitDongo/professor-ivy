@@ -5,6 +5,8 @@ A few of the features include (in modules):
 * Dynamic Raid information (see `!raid`)
 * Respond to specific words without the need for a prefix (see `!ivy cmd`)
 * Modularized commands
+* Pogo news auto-posting
+* Gym directions
 
 ## Requirements
 1. node.js
@@ -33,8 +35,13 @@ A few of the features include (in modules):
 7. `forcedChannelId` - Channel id to report changes in game update forced status
 8. `tradetags` - roles allowed to behave as a tag for trading
 9. `newsChannelId` - Channel id to post new news from pogo - nothing will be posted when initially run since Ivy
-doesn't know what's new! 
-10. Database parameters - when specified, these must all be specified
+doesn't know what's new!
+10. Where Is information (only needed if `database` module is enabled)
+    * `whereIsDatabaseType` - database type for `whereis` module - accepts either `rocketmap` or `monocle` currently
+    * `whereIsDatabaseName` - the name of your database (schema) associated with the above setting
+    * `whereIsCacheRefresh` - How frequently the cache file should be updated from the database - in minutes
+11. `googleMapsAPIKey` - API key for Google Maps - currently only used in the `whereis` module
+12. Database parameters - when specified, these must all be specified
     1. `dbhost` - database host name
     2. `dbuser` - database user name
     3. `dbpass` - database password
@@ -100,7 +107,7 @@ Keep in mind that this is *non-recoverable* unless you make database backups pri
 By default, as listed in the `config/config.ini.example` file, the default enabled modules are 
 ```
 "modules": [
-   "raid", "selfassignrole", "channelclean", "commands"
+   "raid", "selfassignrole", "channelclean", "commands", "whereis"
  ]
 ```
 and the default admin-only modules are
@@ -182,6 +189,15 @@ It will be reviewed promptly and responded to when time allows.
 * Pogo News Poster
     * Checks if new news is posted from pogo.
     * Notifies to the channel of choice (through the config file's `newsChannelId`) when something new is posted by them.
+* `where is {gym/stop name}`
+    * Posts the location of a stop or gym in an embed with a link to the location
+    * Posts a static map if `googleMapsAPIKey` is filled out
+    * Logic flow: If the database module is not enabled, then it will always look in the cache file `cache/whereis.json`
+    Otherwise, it will check the config option `whereIsCacheRefresh` - also requires other `whereIs` config options -
+    and see if the life of the file is more than the specified refresh time. When the config time is 0 it will always
+    grab from the cache.
+    
+If you have any questions, feel free to PM me on Discord, or open an issue on this repo. 
 
 I hope you enjoy this project! ^-^
 

@@ -9,6 +9,10 @@
   "adminUserId": "Your user ID here",
   "forcedChannelId": "ID of the channel you wish to have forced messages on",
   "newsChannelId": "ID of the channel you wish for news to be posted",
+  "whereIsDatabaseType": "rocketmap or monocle",
+  "whereIsDatabaseName": "the name of your database (schema) associated with the above setting",
+  "whereIsCacheRefresh": "How frequently the cache file should be updated from the database - in minutes",
+  "googleMapsAPIKey": "API key for Google Maps",
   "roles": [
     "put", "roles", "that", "are", "available", "to", "be", "auto", "assigned", "here", "Roles", "must", "be", "TitleCase"
   ],
@@ -16,7 +20,7 @@
     "Put", "channel", "ids", "here", "that", "you", "want", "to", "be", "able", "to", "be", "cleaned"
   ],
   "modules": [
-    "raid", "selfassignrole", "channelclean", "commands", "trade"
+    "raid", "selfassignrole", "channelclean", "commands", "trade", "whereis"
   ],
   "adminmodules": [
     "commands"
