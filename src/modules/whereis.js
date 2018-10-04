@@ -12,6 +12,9 @@ var whereIs = function whereIs(message, cmd, config, commands, con, richEmbed) {
                 }
             }
         }
+        else{
+            console.log('Cache file doesn\'t exist');
+        }
         return false;
     };
     let compileData = (data) => {
@@ -30,9 +33,11 @@ var whereIs = function whereIs(message, cmd, config, commands, con, richEmbed) {
         return richEmbed;
     };
     let sendMessage = (embed) => {
-        let content = embed;
-        if (!embed) content = 'There was an issue getting the data. Check if the cache file exists!';
-        message.channel.send(content).then(m => {
+        if (!embed){
+            message.react('🤷');
+            return;
+        }
+        message.channel.send(embed).then(m => {
             m.delete(600000); // 10 minutes
         });
     };
