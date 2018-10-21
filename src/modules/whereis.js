@@ -1,6 +1,7 @@
 var whereIs = function whereIs(message, cmd, config, commands, con, richEmbed) {
-    let messageContent = message.content.split('where is ');
-    if (!message.content.startsWith('where is ') || messageContent.length <= 1) return;
+    let messageLower = message.content.toLowerCase();
+    let messageContent = messageLower.split('where is ');
+    if (!messageLower.startsWith('where is ') || messageContent.length <= 1) return;
     let fs = require('fs');
     messageContent = message.content.slice(9);
     let getCacheData = (find) => {
