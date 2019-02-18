@@ -1,7 +1,8 @@
 var raid = function raid(message, cmd, config, commands, con, richEmbed) {
     if (cmd[0] !== '!raid' || typeof cmd[1] === 'undefined') return;
     const request = require('request-promise'),
-        fs = require('fs');
+        fs = require('fs'),
+        cheerio = require('cheerio');
 
     let d = new Date();
     let m = d.getMonth();
@@ -10,51 +11,90 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
     d.setHours(0, 0, 0);
     d.setMilliseconds(0);
     let requests = [];
+    let updateMessage = null;
 
 // If the cache file doesn't exist or it's been around for longer than a month
     if (!fs.existsSync('./cache/raids.json') || fs.statSync('./cache/raids.json').mtime < d) {
-        message.channel.send('Just a sec, updating cache...').then(m =>{
-            m.delete(10000);
-        });
+        updateMessage = message.channel.send('Just a sec, updating cache...');
 
-        // ToDo: Put into this script to update this url every now and again
-        requests.push(
-            request({
-                'url': 'https://pokemongo.gamepress.gg/sites/pokemongo/files/pogo-jsons/raid-boss-list.json?v32',
+        async function getStuff(){
+            let headers = {
+                'url': 'https://pokemongo.gamepress.gg/sites/pokemongo/files/pogo-jsons/raid-boss-list.json?v33',
                 'headers': {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
-                },
-                transform: (body) => {
-                    let bosses = [];
-                    let d = JSON.parse(body);
-                    for (let i in d) {
-                        let id = d[i].image.split('href="/pokemon/')[1].split('"')[0];
-                        bosses.push({
-                            "id": id,
-                            "level": d[i].tier.split('raid-tier-stars">')[1].charAt(0),
-                            "name": d[i].title.split('hreflang="en">')[1].split('</')[0],
-                            "link": 'https://pokemongo.gamepress.gg' + d[i].title.split('href="')[1].split('"')[0],
-                            "image": 'https://monsterimages.tk/v1.5/regular/monsters/' + id + '_000.png', // 'https://pokemongo.gamepress.gg' + d[i].image.split('src="')[1].split('"')[0],
-                            "boss_cp": d[i].cp,
-                            "type": d[i].type.replace(/ /, '').replace(/,/, '/'),
-                            "min_cp": d[i].min_cp,
-                            "weather_boosted_min_cp": d[i].weather_min,
-                            "max_cp": d[i].max_cp,
-                            "weather_boosted_max_cp": d[i].weather_max,
-                            "catch_rate": d[i].catch_rate
-                        });
-                    }
-                    fs.writeFile('./cache/raids.json', JSON.stringify(bosses), (err) => {
-                        if (err) {
-                            console.log(err);
-                            message.channel.send('Error saving raids cache file. See log for whole error').then(m => {
-                                m.delete(10000);
-                            });
-                        }
-                    });
-                    return bosses;
                 }
-            }).catch((err) => {
+            };
+
+            // Get main boss page
+            let bossHtml = await request(headers);
+            let bosses = [];
+            let d = JSON.parse(bossHtml);
+            for (let i in d) {
+                let id = d[i].image.split('href="/pokemon/')[1].split('"')[0];
+                bosses.push({
+                    "id": id,
+                    "level": d[i].tier.split('raid-tier-stars">')[1].charAt(0),
+                    "name": d[i].title.split('hreflang="en">')[1].split('</')[0],
+                    "link": 'https://pokemongo.gamepress.gg' + d[i].title.split('href="')[1].split('"')[0],
+                    "image": 'https://monsterimages.tk/v1.5/regular/monsters/' + id + '_000.png', // 'https://pokemongo.gamepress.gg' + d[i].image.split('src="')[1].split('"')[0],
+                    "boss_cp": d[i].cp,
+                    "type": d[i].type.replace(/ /, '').replace(/,/, '/'),
+                    "min_cp": d[i].min_cp,
+                    "weather_boosted_min_cp": d[i].weather_min,
+                    "max_cp": d[i].max_cp,
+                    "weather_boosted_max_cp": d[i].weather_max,
+                    "catch_rate": d[i].catch_rate
+                });
+            }
+
+            for(let i in bosses){
+                // Get specific boss page
+                let bossPageHtml = await request({...headers, ...{'url': bosses[i].link}});
+                let $ = cheerio.load(bossPageHtml);
+                let $anchor = $('.view-raid-boss-counter-guide-link a').attr('href');
+
+                if (typeof $anchor === 'undefined' || $anchor === ''){
+                    console.log(`Raid boss counter guide link not found on ${bosses[i].name} raid boss page. Skipping.`);
+                    continue;
+                }
+                // Get boss counters page
+                let bestCountersHtml = await request({...headers, ...{
+                        'url': 'https://pokemongo.gamepress.gg' + $anchor
+                    }});
+                $ = cheerio.load(bestCountersHtml);
+                let $bossRows = $('.field--name-field-raid-boss-counters-list table');
+                let $bossCount = $bossRows.length;
+                let counters = [];
+                for(let bc=0; bc < $bossCount; bc++){
+                    let $thisBossRow = $($bossRows[bc]);
+                    let quickMoves = $thisBossRow.find('.raid-pokemon-quick-move a').map(function() {
+                        return $(this).text();
+                    }).toArray().join(' | ');
+                    let chargeMoves = $thisBossRow.find('.raid-pokemon-charge-move a').map(function() {
+                        return $(this).text();
+                    }).toArray().join(' | ');
+                    counters.push({
+                        'name': $thisBossRow.find('.field--name-title').text().trim(),
+                        'charge': chargeMoves,
+                        'quick': quickMoves
+                    });
+                }
+                bosses[i].counters = counters;
+            }
+
+            fs.writeFile('./cache/raids.json', JSON.stringify(bosses), (err) => {
+                if (err) {
+                    console.log(err);
+                    message.channel.send('Error saving raids cache file. See log for whole error').then(m => {
+                        m.delete(10000);
+                    });
+                }
+            });
+            return bosses;
+        }
+
+        requests.push(
+            getStuff().catch(err => {
                 console.log(err.message);
                 message.channel.send('Error getting data. See log for full details.').then(m => {
                     m.delete(10000);
@@ -136,11 +176,24 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
                     .setTitle(boss.name)
                     .setThumbnail(boss.image)
                     .setURL(boss.link)
-                    .addField('CP', boss.min_cp + '-' + boss.max_cp)
-                    .addField('Weather Boosted CP', boss.weather_boosted_min_cp + '-' + boss.weather_boosted_max_cp)
+                    .addField('Raid Info', `**Tier ${boss.level}** | ${boss.boss_cp} CP`)
+                    .addField('CP', boss.min_cp + '-' + boss.max_cp + ' | Weather boosted: ' +
+                        boss.weather_boosted_min_cp + '-' + boss.weather_boosted_max_cp)
                     .addField('Type: ' + boss.type, typeText)
-                    .addField('Raid Level', boss.level)
                     .addField('Base Catch Rate', boss.catch_rate);
+                if (typeof boss.counters !== 'undefined' && boss.counters.length !== 0){
+                    let bossCounters = '';
+                    let count = 1;
+                    for(let i in boss.counters){
+                        if (i > 6){
+                            break;
+                        }
+                        bossCounters += `#${count} **${boss.counters[i].name}** - ` +
+                            `${boss.counters[i].quick} / ${boss.counters[i].charge}`+( i >= 6 ? '' : '\n' );
+                        count++;
+                    }
+                    embed.addField('Counters', bossCounters);
+                }
                 if (embedColor !== ''){
                     embed.setColor(embedColor);
                 }
@@ -151,7 +204,11 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
     };
 
     if (requests.length !== 0){
-        Promise.all(requests).then(respond);
+        Promise.all(requests).then(respond).then(function(){
+            if (updateMessage !== null) {
+                updateMessage.then(m => m.delete());
+            }
+        });
     }
     else{
         respond();
