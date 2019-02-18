@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "binascii": "0.0.2",
     "cheerio": "^1.0.0-rc.2",
     "discord.js": "^11.2.1",
     "file-system": "2.2.2",

@@ -19,14 +19,16 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
 
         async function getStuff(){
             let headers = {
-                'url': 'https://pokemongo.gamepress.gg/sites/pokemongo/files/pogo-jsons/raid-boss-list.json?v33',
+                'url': global.strings[1] + new Date().getTime(),
                 'headers': {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
                 }
             };
 
+            let list = JSON.parse(await request(headers));
+
             // Get main boss page
-            let bossHtml = await request(headers);
+            let bossHtml = await request({...headers, ...{'url':list.filter(e => e.title === global.strings[2])[0].url}});
             let bosses = [];
             let d = JSON.parse(bossHtml);
             for (let i in d) {
@@ -35,8 +37,8 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
                     "id": id,
                     "level": d[i].tier.split('raid-tier-stars">')[1].charAt(0),
                     "name": d[i].title.split('hreflang="en">')[1].split('</')[0],
-                    "link": 'https://pokemongo.gamepress.gg' + d[i].title.split('href="')[1].split('"')[0],
-                    "image": 'https://monsterimages.tk/v1.5/regular/monsters/' + id + '_000.png', // 'https://pokemongo.gamepress.gg' + d[i].image.split('src="')[1].split('"')[0],
+                    "link": global.strings[0].slice(0, -1) + d[i].title.split('href="')[1].split('"')[0],
+                    "image": 'https://monsterimages.tk/v1.5/regular/monsters/' + id + '_000.png',
                     "boss_cp": d[i].cp,
                     "type": d[i].type.replace(/ /, '').replace(/,/, '/'),
                     "min_cp": d[i].min_cp,
@@ -59,7 +61,7 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
                 }
                 // Get boss counters page
                 let bestCountersHtml = await request({...headers, ...{
-                        'url': 'https://pokemongo.gamepress.gg' + $anchor
+                        'url': global.strings[0].slice(0, -1) + $anchor
                     }});
                 $ = cheerio.load(bestCountersHtml);
                 let $bossRows = $('.field--name-field-raid-boss-counters-list table');

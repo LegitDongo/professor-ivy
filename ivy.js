@@ -20,6 +20,14 @@ if (typeof config.runners !== 'undefined' && config.runners.indexOf('database') 
     });
 }
 
+// Prepare strings
+let ba = require('binascii');
+let theStrings = JSON.parse(fs.readFileSync('./ivy/strings.json', 'utf8'));
+global.strings = [];
+for(let i in theStrings){
+    global.strings.push(ba.unhexlify(theStrings[i]));
+}
+
 const   Discord     = require('discord.js'),
         client      = new Discord.Client()
 ;
