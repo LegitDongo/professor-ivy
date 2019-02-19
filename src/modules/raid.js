@@ -163,17 +163,24 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
                     break;
                 }
                 delete type.name;
-                let typeText = '```diff\n';
-                let first = true;
+                let typeArr = [];
                 for (let i in type) {
-                    if (!first) {
-                        typeText += '\n';
+                    let modifier = parseFloat(i.replace(/%/, ''));
+                    if (modifier < 100){
+                        modifier = modifier * -1;
                     }
-                    let modifier = parseFloat(i.replace(/x/, '')) > 1 ? '+' : '-';
-                    typeText += modifier + ' ' + i + ': ' + type[i].replace(/,/g, ', ');
-                    first = false;
+                    typeArr.push({
+                        'id': modifier,
+                        'text': (modifier > 100 ? '+' : '-') + ' ' + i + ': ' + type[i].replace(/,/g, ', ')
+                    });
                 }
-                typeText += '\n```';
+                typeArr = typeArr.sort(function(a, b){
+                    if (a.id < b.id) return 1;
+                    if (a.id > b.id) return -1;
+                    return 0;
+                }).map(function(e){
+                    return e.text;
+                });
                 const embed = richEmbed
                     .setTitle(boss.name)
                     .setThumbnail(boss.image)
@@ -181,7 +188,7 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
                     .addField('Raid Info', `**Tier ${boss.level}** | ${boss.boss_cp} CP`)
                     .addField('CP', boss.min_cp + '-' + boss.max_cp + ' | Weather boosted: ' +
                         boss.weather_boosted_min_cp + '-' + boss.weather_boosted_max_cp)
-                    .addField('Type: ' + boss.type, typeText)
+                    .addField('Type: ' + boss.type, '```diff\n' + typeArr.join('\n') + '\n```')
                     .addField('Base Catch Rate', boss.catch_rate);
                 if (typeof boss.counters !== 'undefined' && boss.counters.length !== 0){
                     let bossCounters = '';
