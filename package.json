@@ -5,12 +5,12 @@
   "dependencies": {
     "binascii": "0.0.2",
     "cheerio": "^1.0.0-rc.2",
-    "discord.js": "^11.2.1",
+    "discord.js": "^11.4.2",
     "file-system": "2.2.2",
-    "mysql": "^2.14.1",
-    "npm": "^6.0.1",
+    "mysql": "^2.16.0",
+    "npm": "^6.8.0",
     "request": "2.85.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.4"
   },
   "description": "Another Discord.js bot",
   "main": "ivy.js",
