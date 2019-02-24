@@ -9,7 +9,7 @@
     "file-system": "2.2.2",
     "mysql": "^2.16.0",
     "npm": "^6.8.0",
-    "request": "2.85.0",
+    "request": "^2.88.0",
     "request-promise": "^4.2.4"
   },
   "description": "Another Discord.js bot",
