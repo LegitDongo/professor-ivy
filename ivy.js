@@ -85,7 +85,7 @@ var clientready = () => {
         callback(client, config, commands, con);
     });
 
-    client.user.setGame('Type !help for help');
+    client.user.setActivity('Type !help for help');
     console.log(`Running ${ botname }`);
 };
 
