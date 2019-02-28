@@ -31,14 +31,37 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
             let bossHtml = await request({...headers, ...{'url':list.filter(e => e.title === global.strings[2])[0].url}});
             let bosses = [];
             let d = JSON.parse(bossHtml);
+            let forms = JSON.parse(fs.readFileSync('./src/assets/forms.json'));
             for (let i in d) {
                 let id = d[i].image.split('href="/pokemon/')[1].split('"')[0];
-                bosses.push({
+                if (/-/.test(id)){
+                    id = id.split('-')[0];
+                }
+
+                let formNameApproved = false;
+                let formIdApproved = false;
+                let title = d[i].title_plain;
+                for(let i in forms){
+                    if (parseInt(i) === parseInt(id) || i === 'all'){
+                        for(let j in forms[i]){
+                            let test = new RegExp(forms[i][j], 'gi');
+                            if (test.test(title)){
+                                formNameApproved = forms[i][j];
+                                formIdApproved = j;
+                                title = title.replace(test, '').replace(/(\(|\)|forme|form)/gi, '').trim();
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                let bossObj = {
                     "id": id,
                     "level": d[i].tier.split('raid-tier-stars">')[1].charAt(0),
-                    "name": d[i].title.split('hreflang="en">')[1].split('</')[0],
+                    "name": title,
                     "link": global.strings[0].slice(0, -1) + d[i].title.split('href="')[1].split('"')[0],
-                    "image": 'https://monsterimages.tk/v1.5/regular/monsters/' + id + '_000.png',
+                    "image": `https://monsterimages.tk/v1.5/regular/monsters/${id.padStart(3, '0')}_${formIdApproved !== false ? formIdApproved : '000'}.png`,
                     "boss_cp": d[i].cp,
                     "type": d[i].type.replace(/ /, '').replace(/,/, '/'),
                     "min_cp": d[i].min_cp,
@@ -46,7 +69,11 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
                     "max_cp": d[i].max_cp,
                     "weather_boosted_max_cp": d[i].weather_max,
                     "catch_rate": d[i].catch_rate
-                });
+                };
+                if (formNameApproved !== false){
+                    bossObj['form'] = formNameApproved;
+                }
+                bosses.push(bossObj);
             }
 
             for(let i in bosses){
@@ -132,84 +159,108 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
          * Respond to the request
          **/
 
-        cmd[1] = cmd[1].toLowerCase();
-        for (let i in bosses) {
-            if (bosses[i].name.toLowerCase() === cmd[1]) {
-                let boss = bosses[i];
-                let type = types.filter((obj) => {
-                    let a = obj.name.toLowerCase();
-                    let b = boss.type.toLowerCase();
-                    if (a === b) return true;
-                    a = a.split('/');
-                    b = b.split('/');
-                    if (a.length > 1 && b.length > 1) {
-                        if (a[0] === b[1] && a[1] === b[0]) {
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-                let embedColor = '';
-                if (typeof type[0] !== 'undefined') {
-                    type = type[0];
-                    let mainType = type.name;
-                    if (type.name.includes('/')) mainType = type.name.split('/')[0];
-                    if (typeof assets['typeColors'][mainType.toLowerCase()] !== 'undefined') embedColor = assets['typeColors'][mainType.toLowerCase()];
-                }
-                else {
-                    message.channel.send('Type not found in types array. Please check data.').then(m => {
-                        m.delete(10000);
-                    });
-                    break;
-                }
-                delete type.name;
-                let typeArr = [];
-                for (let i in type) {
-                    let modifier = parseFloat(i.replace(/%/, ''));
-                    if (modifier < 100){
-                        modifier = modifier * -1;
-                    }
-                    typeArr.push({
-                        'id': modifier,
-                        'text': (modifier > 100 ? '+' : '-') + ' ' + i + ': ' + type[i].replace(/,/g, ', ')
-                    });
-                }
-                typeArr = typeArr.sort(function(a, b){
-                    if (a.id < b.id) return 1;
-                    if (a.id > b.id) return -1;
-                    return 0;
-                }).map(function(e){
-                    return e.text;
-                });
-                const embed = richEmbed
-                    .setTitle(boss.name)
-                    .setThumbnail(boss.image)
-                    .setURL(boss.link)
-                    .addField('Raid Info', `**Tier ${boss.level}** | ${boss.boss_cp} CP`)
-                    .addField('CP', boss.min_cp + '-' + boss.max_cp + ' | Weather boosted: ' +
-                        boss.weather_boosted_min_cp + '-' + boss.weather_boosted_max_cp)
-                    .addField('Type: ' + boss.type, '```diff\n' + typeArr.join('\n') + '\n```')
-                    .addField('Base Catch Rate', boss.catch_rate);
-                if (typeof boss.counters !== 'undefined' && boss.counters.length !== 0){
-                    let bossCounters = '';
-                    let count = 1;
-                    for(let i in boss.counters){
-                        if (i > 6){
-                            break;
-                        }
-                        bossCounters += `#${count} **${boss.counters[i].name}** - ` +
-                            `${boss.counters[i].quick} / ${boss.counters[i].charge}`+( i >= 6 ? '' : '\n' );
-                        count++;
-                    }
-                    embed.addField('Counters', bossCounters);
-                }
-                if (embedColor !== ''){
-                    embed.setColor(embedColor);
-                }
-                message.channel.send({embed});
-                break;
+        let form = null, monster = null;
+        let command = cmd.join(' ').toLowerCase().split(' ');
+        command.splice(0,1);
+        monster = command.splice(-1)[0];
+        form = command.filter(x => !x.includes("form")).join(" ");
+
+        // 1. if no form is requested then look for an object with no form or the "normal" form
+        // 2. if a form was requested, search for the specific form | name key
+        let possibleBosses = [];
+        if (form === null || form === '') {
+            possibleBosses = bosses.filter(item => item.name.toLowerCase().indexOf(monster) !== -1);
+            if (possibleBosses.length > 1){
+                possibleBosses = possibleBosses.filter(
+                    item => typeof item.form === 'undefined' || item.form === 'Normal');
             }
         }
+        else{
+            possibleBosses = bosses.filter(item =>
+                // Make sure we have a form
+                typeof item.form !== 'undefined' &&
+                // Check name
+                (item.name.toLowerCase().indexOf(monster) !== -1 || item.name.toLowerCase().indexOf(monster) !== -1) &&
+                // Check form
+                (item.form.toLowerCase().indexOf(form) !== -1 || item.form.toLowerCase().indexOf(form) !== -1))
+        }
+
+        if (possibleBosses.length === 0){
+            return;
+        }
+        let boss = possibleBosses[0];
+
+        let type = types.filter((obj) => {
+            let a = obj.name.toLowerCase();
+            let b = boss.type.toLowerCase();
+            if (a === b) return true;
+            a = a.split('/');
+            b = b.split('/');
+            if (a.length > 1 && b.length > 1) {
+                if (a[0] === b[1] && a[1] === b[0]) {
+                    return true;
+                }
+            }
+            return false;
+        });
+        let embedColor = '';
+        if (typeof type[0] !== 'undefined') {
+            type = type[0];
+            let mainType = type.name;
+            if (type.name.includes('/')) mainType = type.name.split('/')[0];
+            if (typeof assets['typeColors'][mainType.toLowerCase()] !== 'undefined') embedColor = assets['typeColors'][mainType.toLowerCase()];
+        }
+        else {
+            message.channel.send('Type not found in types array. Please check data.').then(m => {
+                m.delete(10000);
+            });
+            return;
+        }
+        delete type.name;
+        let typeArr = [];
+        for (let i in type) {
+            let modifier = parseFloat(i.replace(/%/, ''));
+            if (modifier < 100){
+                modifier = modifier * -1;
+            }
+            typeArr.push({
+                'id': modifier,
+                'text': (modifier > 100 ? '+' : '-') + ' ' + i + ': ' + type[i].replace(/,/g, ', ')
+            });
+        }
+        typeArr = typeArr.sort(function(a, b){
+            if (a.id < b.id) return 1;
+            if (a.id > b.id) return -1;
+            return 0;
+        }).map(function(e){
+            return e.text;
+        });
+        const embed = richEmbed
+            .setTitle(boss.name + (typeof boss.form !== 'undefined' ? ` | ${boss.form}` : ''))
+            .setThumbnail(boss.image)
+            .setURL(boss.link)
+            .addField('Raid Info', `**Tier ${boss.level}** | ${boss.boss_cp} CP`)
+            .addField('CP', boss.min_cp + '-' + boss.max_cp + ' | Weather boosted: ' +
+                boss.weather_boosted_min_cp + '-' + boss.weather_boosted_max_cp)
+            .addField('Type: ' + boss.type, '```diff\n' + typeArr.join('\n') + '\n```')
+            .addField('Base Catch Rate', boss.catch_rate);
+        if (typeof boss.counters !== 'undefined' && boss.counters.length !== 0){
+            let bossCounters = '';
+            let count = 1;
+            for(let i in boss.counters){
+                if (i > 6){
+                    break;
+                }
+                bossCounters += `#${count} **${boss.counters[i].name}** - ` +
+                    `${boss.counters[i].quick} / ${boss.counters[i].charge}`+( i >= 6 ? '' : '\n' );
+                count++;
+            }
+            embed.addField('Counters', bossCounters);
+        }
+        if (embedColor !== ''){
+            embed.setColor(embedColor);
+        }
+        message.channel.send({embed});
     };
 
     if (requests.length !== 0){
