@@ -1,11 +1,11 @@
 //location commands
-var selfassignrole = function selfassignrole(message, cmd, config, commands){
+var selfassignrole = function selfassignrole(message, cmd){
     //message = object from discord.js
     //cmd = the result of message.content.split(' ');
     if (message.content.startsWith('.iam') && cmd[1]){
         //role is only valid in searching if the correct case is included
         let role = message.guild.roles.find('name', cmd[1].toProperCase());
-        if (role && config.roles.indexOf(role.name) !== -1){
+        if (role && ivy.config.roles.indexOf(role.name) !== -1){
             if (message.content.startsWith('.iamnot')){
                 message.member.removeRole(role).catch(console.error).then(role => {
                     message.reply(`Removed from role ${ cmd[1] }`).then(m => {

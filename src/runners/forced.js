@@ -1,27 +1,26 @@
-var forcedCheck = function forcedCheck(client, config, commands, con) {
+var forcedCheck = function forcedCheck() {
     // Check required parameters
-    if (typeof config.forcedChannelId !== 'undefined' && config.forcedChannelId !== '') {
-        let request = require('request-promise');
-        let fs = require('fs');
+    if (typeof ivy.config.forcedChannelId !== 'undefined' && ivy.config.forcedChannelId !== '') {
+
         (function checkForced() {
-            request({
+            ivy.request({
                 'url': 'https://pgorelease.nianticlabs.com/plfe/version',
                 'headers': {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
                 }
             }).then((e) => {
-                if (!fs.existsSync('./cache/main.json')) {
-                    fs.writeFile('./cache/main.json', JSON.stringify({'forced': e.substr(2)}), (err) => {
+                if (!ivy.fs.existsSync('./cache/main.json')) {
+                    ivy.fs.writeFile('./cache/main.json', JSON.stringify({'forced': e.substr(2)}), (err) => {
                         if (err) {
                             console.log(err);
                             // Need to move from message to direct channel link
-                            client.channels.get(config.forcedChannelId)
+                            ivy.client.channels.get(ivy.config.forcedChannelId)
                                 .send('Error saving main cache file. Check log for more details.');
                         }
                     });
                     return 0;
                 }
-                fs.readFile('./cache/main.json', (err, data) => {
+                ivy.fs.readFile('./cache/main.json', (err, data) => {
                     if (err) {
                         console.log(err);
                         return 1;
@@ -38,7 +37,7 @@ var forcedCheck = function forcedCheck(client, config, commands, con) {
                     else if (parseInt(jsonData.forced.replace(/\./g, '')) < verInt) {
                         console.log('New version forced! Now on version ' + ver);
                         // Message to channel about new force
-                        client.channels.get(config.forcedChannelId)
+                        ivy.client.channels.get(ivy.config.forcedChannelId)
                             .send('New version forced! We are now on version ' + ver +
                                 '\nThere will be some delay in getting everything set back up.' +
                                 '\nYour patience is appreciated.');
@@ -48,7 +47,7 @@ var forcedCheck = function forcedCheck(client, config, commands, con) {
                     else if (parseInt(jsonData.forced.replace(/\./g, '')) > verInt){
                         console.log('Forced version reverted! Back on version ' + ver);
                         // Message to channel about reversion
-                        client.channels.get(config.forcedChannelId)
+                        ivy.client.channels.get(ivy.config.forcedChannelId)
                             .send('Forced version reverted! Silly Niantic :)' +
                                     '\nWe are now on version ' + ver +
                                     '\nThings shall resume working in a bit.');
@@ -56,10 +55,10 @@ var forcedCheck = function forcedCheck(client, config, commands, con) {
                         write = true;
                     }
                     if (write){
-                        fs.writeFile('./cache/main.json', JSON.stringify(jsonData), (err) => {
+                        ivy.fs.writeFile('./cache/main.json', JSON.stringify(jsonData), (err) => {
                             if (err) {
                                 console.log(err);
-                                client.channels.get(config.forcedChannelId)
+                                ivy.client.channels.get(ivy.config.forcedChannelId)
                                     .send('Error saving main cache file. Check log for more details.');
                             }
                         });

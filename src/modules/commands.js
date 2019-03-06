@@ -1,12 +1,12 @@
 //command list requests
-var commands = function commands(message, cmd, config, commands, con) {
+var commands = function commands(message, cmd) {
     //message = object from discord.js
     //cmd = the result of message.content.split(' ');
-    if ((cmd[0] === '!ivy' && (cmd[1] === 'cmd' || cmd[1] == 'commands')) || (cmd[0] === '!help' && typeof cmd[1] === 'undefined')) {
+    if ((cmd[0] === '!ivy' && (cmd[1] === 'cmd' || cmd[1] === 'commands')) || (cmd[0] === '!help' && typeof cmd[1] === 'undefined')) {
         if (cmd[2] && !isNaN(cmd[2]) && parseInt(cmd[2]) > 0) {
             //gives 11 results?
-            con.query('SELECT term FROM responses LIMIT ?,?', [(cmd[2] - 1) * 10, 10], (err, results, fields) => {
-                if (err) appexit(err);
+            ivy.con.query('SELECT term FROM responses LIMIT ?,?', [(cmd[2] - 1) * 10, 10], (err, results) => {
+                if (err) ivy.appexit(err);
                 let reply = '';
                 let first = true;
                 if (results[0]) {
@@ -27,9 +27,9 @@ var commands = function commands(message, cmd, config, commands, con) {
         else {
             let reply = '';
             if (message.member.hasPermission("ADMINISTRATOR")) {
-                reply = '---ADMIN---\n' + Object.keys(commands.admin).join('\n');
+                reply = '---ADMIN---\n' + Object.keys(ivy.commands.admin).join('\n');
             }
-            let anyone = Object.keys(commands.all).join('\n');
+            let anyone = Object.keys(ivy.commands.all).join('\n');
             if (anyone !== '') {
                 reply += (reply !== '' ? '\n\n' : '') + '---BOT COMMANDS---\n' + anyone;
             }
@@ -44,6 +44,6 @@ var commands = function commands(message, cmd, config, commands, con) {
             message.delete(0);
         }
     }
-}
+};
 
 module.exports = commands;

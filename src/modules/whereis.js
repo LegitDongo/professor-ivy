@@ -1,14 +1,13 @@
-var whereIs = function whereIs(message, cmd, config, commands, con, richEmbed) {
+var whereIs = function whereIs(message, cmd, richEmbed) {
     let messageLower = message.content.toLowerCase();
     let messageContent = messageLower.split('where is ');
     if (!messageLower.startsWith('where is ') || messageContent.length <= 1) return;
-    let fs = require('fs');
     messageContent = message.content.slice(9);
     let getCacheData = (find) => {
-        if (fs.existsSync('./cache/whereis.json')){
-            let whereIsFile = JSON.parse(fs.readFileSync('./cache/whereis.json'));
+        if (ivy.fs.existsSync('./cache/whereis.json')){
+            let whereIsFile = JSON.parse(ivy.fs.readFileSync('./cache/whereis.json'));
             for(let i in whereIsFile){
-                if (slugify(whereIsFile[i].name) === slugify(find)){
+                if (ivy.slugify(whereIsFile[i].name) === slugify(find)){
                     return whereIsFile[i];
                 }
             }
@@ -27,10 +26,10 @@ var whereIs = function whereIs(message, cmd, config, commands, con, richEmbed) {
         if (data.thumbnail !== 'undefined')
             richEmbed.setThumbnail(data.thumbnail);
         richEmbed.setURL(`http://maps.google.com/maps?q=${data.latitude},${data.longitude}`);
-        if (typeof config.googleMapsAPIKey !== 'undefined' && config.googleMapsAPIKey !== '')
+        if (typeof ivy.config.googleMapsAPIKey !== 'undefined' && ivy.config.googleMapsAPIKey !== '')
             richEmbed.setImage(`http://maps.googleapis.com/maps/api/staticmap`+
                 `?center=${data.latitude},${data.longitude}&zoom=16&size=400x300`+
-                `&markers=color:red%7C${data.latitude},${data.longitude}&key=${config.googleMapsAPIKey}`);
+                `&markers=color:red%7C${data.latitude},${data.longitude}&key=${ivy.config.googleMapsAPIKey}`);
         return richEmbed;
     };
     let sendMessage = (embed) => {
@@ -43,19 +42,19 @@ var whereIs = function whereIs(message, cmd, config, commands, con, richEmbed) {
         });
     };
     // Check if database is available/exists
-    if (con && typeof config.whereIsDatabaseType !== 'undefined' && config.whereIsDatabaseName !== 'undefined'){
+    if (ivy.con && typeof ivy.config.whereIsDatabaseType !== 'undefined' && ivy.config.whereIsDatabaseName !== 'undefined'){
         // If the time between now and the cache file isn't more than the allotted cache refresh time
-        if ((typeof config.whereIsCacheRefresh === 'undefined' || !Number.isInteger(config.whereIsCacheRefresh) ||
-            !config.whereIsCacheRefresh > 0) && fs.existsSync('./cache/whereis.json') &&
-            config.whereIsCacheRefresh >= Math.abs(fs.statSync('./cache/whereis.json').mtime - new Date()) / 60000){
+        if ((typeof ivy.config.whereIsCacheRefresh === 'undefined' || !Number.isInteger(ivy.config.whereIsCacheRefresh) ||
+            !ivy.config.whereIsCacheRefresh > 0) && ivy.fs.existsSync('./cache/whereis.json') &&
+            ivy.config.whereIsCacheRefresh >= Math.abs(ivy.fs.statSync('./cache/whereis.json').mtime - new Date()) / 60000){
             sendMessage(compileData(getCacheData(messageContent)));
             return true;
         }
         // Check if the user config is valid and we have something to query off of
-        let queryJson = JSON.parse(fs.readFileSync('./src/assets/whereIsTypes.json'));
+        let queryJson = JSON.parse(ivy.fs.readFileSync('./src/assets/whereIsTypes.json'));
         let type = false;
         for (let i in queryJson) {
-            if (queryJson[i].name === config.whereIsDatabaseType){
+            if (queryJson[i].name === ivy.config.whereIsDatabaseType){
                 type = queryJson[i];
                 break;
             }
@@ -72,11 +71,12 @@ var whereIs = function whereIs(message, cmd, config, commands, con, richEmbed) {
                 doneQueries++;
                 return false;
             }
-            fs.writeFileSync('./cache/whereis.json', JSON.stringify(allData));
+            ivy.fs.writeFileSync('./cache/whereis.json', JSON.stringify(allData));
             return true;
         };
         for(let q in type.queries) {
-            con.query(type.queries[q].query.replace(/\{dbname\}/g, config.whereIsDatabaseName), (err, results) => {
+            ivy.con.query(type.queries[q].query.replace(/\{dbname\}/g, ivy.config.whereIsDatabaseName), (
+                err, results) => {
                 if (err) {
                     console.log(err);
                     return false;

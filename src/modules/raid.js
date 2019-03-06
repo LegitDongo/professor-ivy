@@ -1,37 +1,37 @@
-var raid = function raid(message, cmd, config, commands, con, richEmbed) {
+var raid = function raid(message, cmd, richEmbed) {
     if (cmd[0] !== '!raid' || typeof cmd[1] === 'undefined') return;
-    const request = require('request-promise'),
-        fs = require('fs'),
-        cheerio = require('cheerio');
+    if (typeof ivy.cheerio === 'undefined') {
+        ivy.cheerio = require('cheerio');
+    }
 
-    let d = new Date();
-    let m = d.getMonth();
-    d.setMonth(d.getMonth() - 1);
-    if (d.getMonth() == m) d.setDate(0);
-    d.setHours(0, 0, 0);
-    d.setMilliseconds(0);
+    let date = new Date();
+    let month = date.getMonth();
+    date.setMonth(date.getMonth() - 1);
+    if (date.getMonth() === month) date.setDate(0);
+    date.setHours(0, 0, 0);
+    date.setMilliseconds(0);
     let requests = [];
     let updateMessage = null;
 
-// If the cache file doesn't exist or it's been around for longer than a month
-    if (!fs.existsSync('./cache/raids.json') || fs.statSync('./cache/raids.json').mtime < d) {
+    // If the cache file doesn't exist or it's been around for longer than a month
+    if (!ivy.fs.existsSync('./cache/raids.json') || ivy.fs.statSync('./cache/raids.json').mtime < date) {
         updateMessage = message.channel.send('Just a sec, updating cache...');
 
         async function getStuff(){
             let headers = {
-                'url': global.strings[1] + new Date().getTime(),
+                'url': ivy.strings[1] + new Date().getTime(),
                 'headers': {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
                 }
             };
 
-            let list = JSON.parse(await request(headers));
+            let list = JSON.parse(await ivy.request(headers));
 
             // Get main boss page
-            let bossHtml = await request({...headers, ...{'url':list.filter(e => e.title === global.strings[2])[0].url}});
+            let bossHtml = await
+                ivy.request({...headers, ...{'url':list.filter(e => e.title === ivy.strings[2])[0].url}});
             let bosses = [];
             let d = JSON.parse(bossHtml);
-            let forms = JSON.parse(fs.readFileSync('./src/assets/forms.json'));
             for (let i in d) {
                 let id = d[i].image.split('href="/pokemon/')[1].split('"')[0];
                 if (/-/.test(id)){
@@ -41,12 +41,12 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
                 let formNameApproved = false;
                 let formIdApproved = false;
                 let title = d[i].title_plain;
-                for(let i in forms){
+                for(let i in ivy.assets.forms){
                     if (parseInt(i) === parseInt(id) || i === 'all'){
-                        for(let j in forms[i]){
-                            let test = new RegExp(forms[i][j], 'gi');
+                        for(let j in ivy.assets.forms[i]){
+                            let test = new RegExp(ivy.assets.forms[i][j], 'gi');
                             if (test.test(title)){
-                                formNameApproved = forms[i][j];
+                                formNameApproved = ivy.assets.forms[i][j];
                                 formIdApproved = j;
                                 title = title.replace(test, '').replace(/(\(|\)|forme|form)/gi, '').trim();
                                 break;
@@ -60,7 +60,7 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
                     "id": id,
                     "level": d[i].tier.split('raid-tier-stars">')[1].charAt(0),
                     "name": title,
-                    "link": global.strings[0].slice(0, -1) + d[i].title.split('href="')[1].split('"')[0],
+                    "link": ivy.strings[0].slice(0, -1) + d[i].title.split('href="')[1].split('"')[0],
                     "image": `https://monsterimages.tk/v1.5/regular/monsters/${id.padStart(3, '0')}_${formIdApproved !== false ? formIdApproved : '000'}.png`,
                     "boss_cp": d[i].cp,
                     "type": d[i].type.replace(/ /, '').replace(/,/, '/'),
@@ -78,8 +78,8 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
 
             for(let i in bosses){
                 // Get specific boss page
-                let bossPageHtml = await request({...headers, ...{'url': bosses[i].link}});
-                let $ = cheerio.load(bossPageHtml);
+                let bossPageHtml = await ivy.request({...headers, ...{'url': bosses[i].link}});
+                let $ = ivy.cheerio.load(bossPageHtml);
                 let $anchor = $('.view-raid-boss-counter-guide-link a').attr('href');
 
                 if (typeof $anchor === 'undefined' || $anchor === ''){
@@ -87,10 +87,10 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
                     continue;
                 }
                 // Get boss counters page
-                let bestCountersHtml = await request({...headers, ...{
-                        'url': global.strings[0].slice(0, -1) + $anchor
+                let bestCountersHtml = await ivy.request({...headers, ...{
+                        'url': ivy.strings[0].slice(0, -1) + $anchor
                     }});
-                $ = cheerio.load(bestCountersHtml);
+                $ = ivy.cheerio.load(bestCountersHtml);
                 let $bossRows = $('.field--name-field-raid-boss-counters-list table');
                 let $bossCount = $bossRows.length;
                 let counters = [];
@@ -111,7 +111,7 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
                 bosses[i].counters = counters;
             }
 
-            fs.writeFile('./cache/raids.json', JSON.stringify(bosses), (err) => {
+            ivy.fs.writeFile('./cache/raids.json', JSON.stringify(bosses), (err) => {
                 if (err) {
                     console.log(err);
                     message.channel.send('Error saving raids cache file. See log for whole error').then(m => {
@@ -142,9 +142,9 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
         let types = null;
         try {
             if (bosses.length === 0) {
-                bosses = JSON.parse(fs.readFileSync('./cache/raids.json'));
+                bosses = JSON.parse(ivy.fs.readFileSync('./cache/raids.json'));
             }
-            types = JSON.parse(fs.readFileSync('./cache/types.json'));
+            types = JSON.parse(ivy.fs.readFileSync('./cache/types.json'));
         }
         catch (e) {
             console.log(e.message);
@@ -207,8 +207,12 @@ var raid = function raid(message, cmd, config, commands, con, richEmbed) {
         if (typeof type[0] !== 'undefined') {
             type = type[0];
             let mainType = type.name;
-            if (type.name.includes('/')) mainType = type.name.split('/')[0];
-            if (typeof assets['typeColors'][mainType.toLowerCase()] !== 'undefined') embedColor = assets['typeColors'][mainType.toLowerCase()];
+            if (type.name.includes('/')){
+                mainType = type.name.split('/')[0];
+            }
+            if (typeof ivy.assets['typeColors'][mainType.toLowerCase()] !== 'undefined'){
+                embedColor = ivy.assets['typeColors'][mainType.toLowerCase()];
+            }
         }
         else {
             message.channel.send('Type not found in types array. Please check data.').then(m => {
