@@ -8,7 +8,7 @@
     "discord.js": "^11.4.2",
     "file-system": "2.2.2",
     "mysql": "^2.16.0",
-    "npm": "^6.13.4",
+    "npm": "^6.14.6",
     "request": "^2.88.0",
     "request-promise": "^4.2.4"
   },
